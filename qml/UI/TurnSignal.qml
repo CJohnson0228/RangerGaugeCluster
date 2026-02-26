@@ -11,13 +11,26 @@ Item {
     property color iconColor: active ? Theme.themeSuccess : "#000000"
     property string direction: "left"
     property string iconSource: root.direction === "left" ? Theme.iconPath + "arrow-small-left.svg" : Theme.iconPath + "arrow-small-right.svg"
+    layer.enabled: true
+    layer.effect: MultiEffect {
+        shadowEnabled: true
+        shadowColor: Theme.background
+        Behavior on shadowColor { ColorAnimation { duration: 200 }}
+        shadowScale: 1
+        shadowVerticalOffset: 2
+        shadowHorizontalOffset: 1
+        shadowBlur: 0.4
+    }
 
     Rectangle {
         anchors.fill: parent
         radius: 18
-        color: Theme.darkCard
+        gradient: Gradient {
+            GradientStop { position: 0.0; color: Theme.darkGradientInner }
+            GradientStop { position: 1.0; color: Theme.darkGradientOuter }
+        }
         border.width: 1
-        border.color: active ? Theme.themeSuccess : Theme.border
+        border.color: Theme.darkBorder
     }
 
     Image {
@@ -33,4 +46,6 @@ Item {
             colorizationColor: root.iconColor
         }
     }
+
+
 }

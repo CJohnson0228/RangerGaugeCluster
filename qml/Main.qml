@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Effects
 import HMItestUI
 
 ApplicationWindow {
@@ -10,8 +11,13 @@ ApplicationWindow {
     visible: true
     title: "Ranger HMI"
     color: Theme.background
+    Behavior on color { ColorAnimation { duration: Theme.toggleTimer }}
 
-    // Timer to simulate blinker
+    // Dev Properties
+    property bool devOpen: false
+
+
+    // Dev - Timer to simulate blinker
     Timer {
         id: leftBlinkTimer
         interval: 500
@@ -26,13 +32,48 @@ ApplicationWindow {
         onTriggered: iData.rightTurnActive = !iData.rightTurnActive
     }
 
-    // Temporary mouse click for theme toggle
-    MouseArea {
-        anchors.fill: parent
-        onClicked: Theme.isDarkMode = !Theme.isDarkMode
+    // Dev - Controls Toggle
+    Button {
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        height: 40
+        width: 40
+        z: 1
+        onClicked: window.devOpen = !window.devOpen
+
+        background: Rectangle {
+            color: Theme.paper
+            radius: 20
+        }
+
+        contentItem: Image {
+            source: Theme.iconPath + "exclamation-circle.svg"
+            sourceSize.width: width
+            sourceSize.height: height
+            layer.enabled: true
+            layer.effect: MultiEffect {
+                colorization: 1.0
+                colorizationColor: Theme.foreground
+            }
+        }
     }
 
-    Behavior on color { ColorAnimation { duration: Theme.toggleTimer }}
+    // Dev Window
+    DevPanel {
+        open: devOpen
+        leftBlinkerTimerProp: leftBlinkTimer
+        rightBlinkerTimerProp: rightBlinkTimer
+        iDataProp: iData
+        speedoProp: speedo
+        tacho: tach
+    }
+
+
+    // Image Background
+    AmbientBackground {
+        id: ambientBackground
+        Component.onCompleted: Theme.backgroundItem = ambientBackground
+    }
 
     ColumnLayout {
         anchors.fill: parent
@@ -47,65 +88,7 @@ ApplicationWindow {
 
             RowLayout {
                 anchors.fill: parent
-                Slider {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 40
-                    from: 0
-                    to: 120
-                    value: 0
-                    onValueChanged: speedo.value = value
-                }
-
-                Button {
-                    text: "Left Turn"
-                    onClicked: {
-                        if (leftBlinkTimer.running) {
-                            leftBlinkTimer.stop()
-                            iData.leftTurnActive = false
-                        } else {
-                            leftBlinkTimer.start()
-                        }
-                    }
-                }
-
-                Button {
-                    text: "Hazards"
-                    onClicked: {
-                        if (leftBlinkTimer.running) {
-                            leftBlinkTimer.stop()
-                            rightBlinkTimer.stop()
-                            iData.leftTurnActive = false
-                            iData.rightTurnActive = false
-                        } else {
-                            leftBlinkTimer.start()
-                            rightBlinkTimer.start()
-                        }
-                    }
-                }
-
-                Button {
-                    text: "Right Turn"
-                    onClicked: {
-                        if (rightBlinkTimer.running) {
-                            rightBlinkTimer.stop()
-                            iData.rightTurnActive = false
-                        } else {
-                            rightBlinkTimer.start()
-                        }
-                    }
-                }
-
-                Slider {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 40
-                    from: 0
-                    to: 7
-                    value: 0
-                    onValueChanged: tach.value = value
-                }
             }
-
-
         }
 
         // Gauges & display
@@ -113,6 +96,17 @@ ApplicationWindow {
             Layout.preferredWidth: 1400
             Layout.fillHeight: true
             Layout.alignment: Qt.AlignHCenter
+            layer.enabled: true
+            layer.effect: MultiEffect {
+                shadowEnabled: true
+                shadowColor: Theme.darkBackground
+                Behavior on shadowColor { ColorAnimation { duration: 200 }}
+                shadowScale: 1.0
+                shadowVerticalOffset: 2
+                shadowHorizontalOffset: 1
+                shadowBlur: 0.6
+                shadowOpacity: 0.8
+            }
 
             Rectangle {
                 anchors.centerIn: parent
@@ -148,6 +142,7 @@ ApplicationWindow {
 
                     Speedo {
                         id: speedo
+                        value: 0
                         Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
                         Layout.leftMargin: 8
                     }
@@ -155,10 +150,14 @@ ApplicationWindow {
                     InstrumentData {
                         id: iData
                         Layout.fillWidth: true
+                        mediaSourceImage: "tool.jpg"
+                        mediaBandName: "Tool"
+                        mediaSongName: "Sober"
                     }
 
                     Tach {
                         id: tach
+                        value: 0
                         Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
                         Layout.rightMargin: 8
                     }

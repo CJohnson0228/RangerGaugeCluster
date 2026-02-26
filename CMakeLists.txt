@@ -32,15 +32,19 @@ qt_add_qml_module(HMItest
         qml/Tach.qml
         qml/InstrumentData.qml
         qml/WarningIndicators.qml
+        qml/AmbientBackground.qml
+        qml/DevPanel.qml
         qml/UI/TurnSignal.qml
         qml/UI/WarningIndicator.qml
-        qml/UI/Media/MediaData.qml
-        qml/UI/Media/MediaImage.qml
-        qml/UI/Media/MediaProgress.qml
+        qml/UI/Data/Media.qml
+        qml/UI/Data/DataIcon.qml
         RESOURCES
         resources/fonts/BigShoulders.ttf
         resources/fonts/Quicksand.ttf
         resources/fonts/Oxanium.ttf
+        resources/images/bg_dark.jpg
+        resources/images/bg_light.jpg
+        resources/images/tool.jpg
         resources/icons/batterywarning.svg
         resources/icons/brakewarning.svg
         resources/icons/checkengine.svg
@@ -61,6 +65,9 @@ qt_add_qml_module(HMItest
         resources/icons/wipers.svg
         resources/icons/arrow-small-left.svg
         resources/icons/arrow-small-right.svg
+        resources/icons/gear.svg
+        resources/icons/music.svg
+        resources/icons/pickup-truck.svg
 )
 
 set_target_properties(HMItest PROPERTIES
