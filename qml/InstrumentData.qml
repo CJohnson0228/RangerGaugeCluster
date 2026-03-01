@@ -5,12 +5,6 @@ import HMItestUI
 
 ColumnLayout {
     id: root
-    property bool leftTurnActive: false
-    property bool rightTurnActive: false
-    property int activeDataIndex: 0
-    property string mediaSourceImage: ""
-    property string mediaBandName: ""
-    property string mediaSongName: ""
 
     // Turn indicators & Menu
     RowLayout {
@@ -22,7 +16,7 @@ ColumnLayout {
         TurnSignal {
             Layout.leftMargin: 7
             direction: "left"
-            active: root.leftTurnActive
+            active: VehicleState.leftTurnActive
         }
 
         // Spacer
@@ -50,7 +44,7 @@ ColumnLayout {
                 DataIcon {
                     Layout.preferredWidth: width
                     Layout.alignment: Qt.AlignVCenter
-                    active: root.activeDataIndex === 0
+                    active: VehicleState.activeDataIndex === 0
                     label: "Truck Data"
                     iconSource: Theme.iconPath + "pickup-truck.svg"
                 }
@@ -58,14 +52,14 @@ ColumnLayout {
                 DataIcon {
                     Layout.preferredWidth: width
                     Layout.alignment: Qt.AlignVCenter
-                    active: root.activeDataIndex === 1
+                    active: VehicleState.activeDataIndex === 1
                     label: "Music"
                     iconSource: Theme.iconPath + "music.svg"
                 }
                 DataIcon {
                     Layout.preferredWidth: width
                     Layout.alignment: Qt.AlignVCenter
-                    active: root.activeDataIndex === 2
+                    active: VehicleState.activeDataIndex === 2
                     label: "Settings"
                     iconSource: Theme.iconPath + "gear.svg"
                 }
@@ -80,20 +74,37 @@ ColumnLayout {
         TurnSignal {
             Layout.rightMargin: 7
             direction: "right"
-            active: root.rightTurnActive
+            active: VehicleState.rightTurnActive
         }
     }
 
-    // Media Data Display
+    // Media & Data Display
     Item {
         Layout.fillHeight: true
         Layout.fillWidth: true
 
+        // VehicleData
+        VehicleData {
+            opacity: VehicleState.activeDataIndex === 0 ? 1.0 : 0.0
+            Behavior on opacity {
+                NumberAnimation { duration: Theme.toggleTimer; easing.type: Easing.InOutQuad }
+            }
+        }
+
         // Media
         Media{
-            mediaSourceImage: root.mediaSourceImage
-            mediaBandName: root.mediaBandName
-            mediaSongName: root.mediaSongName
+            opacity: VehicleState.activeDataIndex === 1 ? 1.0 : 0.0
+            Behavior on opacity {
+                NumberAnimation { duration: Theme.toggleTimer; easing.type: Easing.InOutQuad }
+            }
+        }
+
+        // Settings
+        Settings {
+            opacity: VehicleState.activeDataIndex === 2 ? 1.0 : 0.0
+            Behavior on opacity {
+                NumberAnimation { duration: Theme.toggleTimer; easing.type: Easing.InOutQuad }
+            }
         }
     }
 }

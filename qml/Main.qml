@@ -13,25 +13,6 @@ ApplicationWindow {
     color: Theme.background
     Behavior on color { ColorAnimation { duration: Theme.toggleTimer }}
 
-    // Dev Properties
-    property bool devOpen: false
-
-
-    // Dev - Timer to simulate blinker
-    Timer {
-        id: leftBlinkTimer
-        interval: 500
-        repeat: true
-        onTriggered: iData.leftTurnActive = !iData.leftTurnActive
-    }
-
-    Timer {
-        id: rightBlinkTimer
-        interval: 500
-        repeat: true
-        onTriggered: iData.rightTurnActive = !iData.rightTurnActive
-    }
-
     // Dev - Controls Toggle
     Button {
         anchors.left: parent.left
@@ -39,7 +20,7 @@ ApplicationWindow {
         height: 40
         width: 40
         z: 1
-        onClicked: window.devOpen = !window.devOpen
+        onClicked: devPanel.visible = !devPanel.visible
 
         background: Rectangle {
             color: Theme.paper
@@ -60,12 +41,7 @@ ApplicationWindow {
 
     // Dev Window
     DevPanel {
-        open: devOpen
-        leftBlinkerTimerProp: leftBlinkTimer
-        rightBlinkerTimerProp: rightBlinkTimer
-        iDataProp: iData
-        speedoProp: speedo
-        tacho: tach
+        id: devPanel
     }
 
 
@@ -93,7 +69,7 @@ ApplicationWindow {
 
         // Gauges & display
         Item {
-            Layout.preferredWidth: 1400
+            Layout.preferredWidth: 1250
             Layout.fillHeight: true
             Layout.alignment: Qt.AlignHCenter
             layer.enabled: true
@@ -142,7 +118,7 @@ ApplicationWindow {
 
                     Speedo {
                         id: speedo
-                        value: 0
+                        value: VehicleState.vehicleSpeed
                         Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
                         Layout.leftMargin: 8
                     }
@@ -150,14 +126,11 @@ ApplicationWindow {
                     InstrumentData {
                         id: iData
                         Layout.fillWidth: true
-                        mediaSourceImage: "tool.jpg"
-                        mediaBandName: "Tool"
-                        mediaSongName: "Sober"
                     }
 
                     Tach {
                         id: tach
-                        value: 0
+                        value: VehicleState.engineRPM
                         Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
                         Layout.rightMargin: 8
                     }

@@ -11,7 +11,7 @@ Item {
     // Configuration
     property real minValue: 0
     property real maxValue: 7
-    property real value: 0
+    property real value: VehicleState.engineRPM
     Behavior on value { NumberAnimation { duration: 200; easing.type: Easing.OutCubic }}
 
     property real startAngle: 150
@@ -198,6 +198,7 @@ Item {
             height: root.radius
             radius: 1
             color: root.needleColor
+            Behavior on color { ColorAnimation { duration: Theme.toggleTimer }}
             x: root.centerX - width / 2
             y: root.centerY - height
             transformOrigin: Item.Bottom
@@ -221,7 +222,7 @@ Item {
             height: coverRadius
             radius: width / 2
             anchors.centerIn: parent
-            border.color: Theme.border
+            border.color: Theme.darkBorder
             border.width: 1
             gradient: Gradient {
                 orientation: Gradient.Vertical

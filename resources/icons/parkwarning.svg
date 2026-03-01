@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="200" height="200" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<svg fill="#ffffff" width="200" height="200" version="1.1" xmlns="http://www.w3.org/2000/svg">
  <g fill="none">
-  <g stroke="#999" stroke-width="3">
-   <path d="m0 16v-16h16"/>
-   <path d="m200 16v-16h-16"/>
-   <path d="m0 184v16h16"/>
-   <path d="m200 184v16h-16"/>
-  </g>
-  <g stroke="#000">
+  <g stroke="#ffffff" >
    <circle cx="100" cy="100" r="63" stroke-width="5"/>
    <path d="m154.8 45.199a77.5 77.5 0 0 1 22.699 54.801 77.5 77.5 0 0 1-22.699 54.801" stroke-width="10"/>
    <path d="M 45.199,45.199 A 77.5,77.5 0 0 0 22.5,100 77.5,77.5 0 0 0 45.199,154.801" stroke-width="10"/>

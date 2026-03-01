@@ -33,7 +33,6 @@ Item {
         themeInfo = isDarkMode ? darkInfo : lightInfo
         themeGradientOuter = isDarkMode ? darkGradientOuter : lightGradientOuter
         themeGradientInner = isDarkMode ? darkGradientInner : lightGradientInner
-        console.log("Theme applied, dark mode: " + isDarkMode + ", bg: " + background)
     }
     readonly property real toggleTimer: 500
 

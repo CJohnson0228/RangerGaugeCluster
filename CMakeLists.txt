@@ -20,6 +20,7 @@ qt_add_executable(HMItest
 )
 
 set_source_files_properties(qml/theme/Theme.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
+set_source_files_properties(qml/vehicleState/VehicleState.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 
 qt_add_qml_module(HMItest
         URI HMItestUI
@@ -28,6 +29,7 @@ qt_add_qml_module(HMItest
         QML_FILES
         qml/Main.qml
         qml/theme/Theme.qml
+        qml/vehicleState/VehicleState.qml
         qml/Speedo.qml
         qml/Tach.qml
         qml/InstrumentData.qml
@@ -37,7 +39,10 @@ qt_add_qml_module(HMItest
         qml/UI/TurnSignal.qml
         qml/UI/WarningIndicator.qml
         qml/UI/Data/Media.qml
+        qml/UI/Data/Settings.qml
+        qml/UI/Data/VehicleData.qml
         qml/UI/Data/DataIcon.qml
+        qml/UI/Data/TirePressReading.qml
         RESOURCES
         resources/fonts/BigShoulders.ttf
         resources/fonts/Quicksand.ttf
@@ -45,6 +50,7 @@ qt_add_qml_module(HMItest
         resources/images/bg_dark.jpg
         resources/images/bg_light.jpg
         resources/images/tool.jpg
+        resources/images/TopView.svg
         resources/icons/batterywarning.svg
         resources/icons/brakewarning.svg
         resources/icons/checkengine.svg

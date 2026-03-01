@@ -7,9 +7,6 @@ import HMItestUI
 
 ColumnLayout {
     id: root
-    property string mediaSourceImage: ""
-    property string mediaBandName: ""
-    property string mediaSongName: ""
 
     anchors.fill: parent
     spacing: 2
@@ -19,7 +16,7 @@ ColumnLayout {
         visible: false
         width: 200
         height: 200
-        source: Theme.imagePath + root.mediaSourceImage
+        source: Theme.imagePath + VehicleState.mediaSourceImage
         fillMode: Image.PreserveAspectCrop
     }
 
@@ -53,7 +50,7 @@ ColumnLayout {
 
             Text {
                 Layout.alignment: Qt.AlignHCenter
-                text: root.mediaSongName
+                text: VehicleState.mediaSongName
                 color: Theme.foreground
                 font.pixelSize: 24
                 font.family: Theme.fontQuicksand
@@ -61,7 +58,7 @@ ColumnLayout {
 
             Text {
                 Layout.alignment: Qt.AlignHCenter
-                text: root.mediaBandName
+                text: VehicleState.mediaBandName
                 color: Theme.textMuted
                 font.pixelSize: 18
                 font.family: Theme.fontQuicksand
