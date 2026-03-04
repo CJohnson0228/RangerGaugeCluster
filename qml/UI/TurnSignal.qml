@@ -8,13 +8,13 @@ Item {
     height: 36
     width: 36
     property bool active: false
-    property color iconColor: active ? Theme.themeSuccess : "#000000"
+    property color iconColor: active ? themeService.success : "#000000"
     property string direction: "left"
-    property string iconSource: root.direction === "left" ? Theme.iconPath + "arrow-small-left.svg" : Theme.iconPath + "arrow-small-right.svg"
+    property string iconSource: root.direction === "left" ? themeService.iconPath + "arrow-small-left.svg" : themeService.iconPath + "arrow-small-right.svg"
     layer.enabled: true
     layer.effect: MultiEffect {
         shadowEnabled: true
-        shadowColor: Theme.background
+        shadowColor: themeService.background
         Behavior on shadowColor { ColorAnimation { duration: 200 }}
         shadowScale: 1
         shadowVerticalOffset: 2
@@ -26,11 +26,11 @@ Item {
         anchors.fill: parent
         radius: 18
         gradient: Gradient {
-            GradientStop { position: 0.0; color: Theme.darkGradientInner }
-            GradientStop { position: 1.0; color: Theme.darkGradientOuter }
+            GradientStop { position: 0.0; color: themeService.darkGradientInner }
+            GradientStop { position: 1.0; color: themeService.darkGradientOuter }
         }
         border.width: 1
-        border.color: Theme.darkBorder
+        border.color: themeService.darkBorder
     }
 
     Image {

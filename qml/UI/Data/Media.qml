@@ -16,7 +16,7 @@ ColumnLayout {
         visible: false
         width: 200
         height: 200
-        source: Theme.imagePath + VehicleState.mediaSourceImage
+        source: themeService.imagePath + vehicleState.mediaSourceImage
         fillMode: Image.PreserveAspectCrop
     }
 
@@ -50,18 +50,18 @@ ColumnLayout {
 
             Text {
                 Layout.alignment: Qt.AlignHCenter
-                text: VehicleState.mediaSongName
-                color: Theme.foreground
+                text: vehicleState.mediaSongName
+                color: themeService.foreground
                 font.pixelSize: 24
-                font.family: Theme.fontQuicksand
+                font.family: themeService.fontQuicksand
             }
 
             Text {
                 Layout.alignment: Qt.AlignHCenter
-                text: VehicleState.mediaBandName
-                color: Theme.textMuted
+                text: vehicleState.mediaBandName
+                color: themeService.textMuted
                 font.pixelSize: 18
-                font.family: Theme.fontQuicksand
+                font.family: themeService.fontQuicksand
             }
         }
     }
@@ -77,9 +77,9 @@ ColumnLayout {
             anchors.left: parent.left
             anchors.verticalCenter: progressBar.verticalCenter
             text: "1:42"
-            font.family: Theme.fontQuicksand
+            font.family: themeService.fontQuicksand
             font.pixelSize: 11
-            color: Theme.textMuted
+            color: themeService.textMuted
         }
 
         Item {
@@ -94,14 +94,14 @@ ColumnLayout {
             Rectangle {
                 anchors.fill: parent
                 radius: 2
-                color: Theme.darkBorder
+                color: themeService.darkBorder
             }
 
             Rectangle {
                 width: parent.width * 0.4
                 height: parent.height
                 radius: 2
-                color: Theme.primary
+                color: themeService.primary
                 Behavior on width { NumberAnimation { duration: 300; easing.type: Easing.OutCubic }}
             }
         }
@@ -110,9 +110,9 @@ ColumnLayout {
             anchors.right: parent.right
             anchors.verticalCenter: progressBar.verticalCenter
             text: "4:50"
-            font.family: Theme.fontQuicksand
+            font.family: themeService.fontQuicksand
             font.pixelSize: 11
-            color: Theme.textMuted
+            color: themeService.textMuted
         }
     }
 

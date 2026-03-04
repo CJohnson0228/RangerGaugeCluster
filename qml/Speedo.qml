@@ -11,7 +11,7 @@ Item {
     // Configuration
     property real minValue: 0
     property real maxValue: 120
-    property real value: VehicleState.vehicleSpeed
+    property real value: vehicleState.vehicleSpeed
     Behavior on value { NumberAnimation { duration: 200; easing.type: Easing.OutCubic }}
 
     property real startAngle: 150
@@ -23,12 +23,12 @@ Item {
     property int decimals: 0
 
     property real arcWidth: 12
-    property color arcBackgroundColor: Theme.card
-    property color dialBackgroundColor: Theme.background
-    property color arcColor: Theme.primary
-    property color needleColor: Theme.foreground
-    property color textColor: Theme.foreground
-    property color labelColor: Theme.foreground
+    property color arcBackgroundColor: themeService.card
+    property color dialBackgroundColor: themeService.background
+    property color arcColor: themeService.primary
+    property color needleColor: themeService.foreground
+    property color textColor: themeService.foreground
+    property color labelColor: themeService.foreground
 
     readonly property real centerX: width / 2
     readonly property real centerY: height / 2
@@ -46,7 +46,7 @@ Item {
         Rectangle {
             anchors.fill: parent
             color: root.dialBackgroundColor
-            Behavior on color { ColorAnimation { duration: Theme.toggleTimer }}
+            Behavior on color { ColorAnimation { duration: themeService.toggleTimer }}
         }
 
         // Speedo Arc
@@ -65,7 +65,7 @@ Item {
                     startAngle: root.startAngle
                     sweepAngle: root.sweepAngle
                 }
-                Behavior on strokeColor { ColorAnimation { duration: Theme.toggleTimer }}
+                Behavior on strokeColor { ColorAnimation { duration: themeService.toggleTimer }}
             }
         }
 
@@ -74,7 +74,7 @@ Item {
             anchors.fill: parent
             ShapePath {
                 fillColor: "transparent"
-                strokeColor: Theme.error
+                strokeColor: themeService.error
                 strokeWidth: root.arcWidth
                 capStyle: ShapePath.FlatCap
                 PathAngleArc {
@@ -85,7 +85,7 @@ Item {
                     startAngle: root.startAngle + (100 - root.minValue) / (root.maxValue - root.minValue) * root.sweepAngle
                     sweepAngle: (20 / (root.maxValue - root.minValue)) * root.sweepAngle
                 }
-                Behavior on strokeColor { ColorAnimation { duration: Theme.toggleTimer }}
+                Behavior on strokeColor { ColorAnimation { duration: themeService.toggleTimer }}
             }
         }
 
@@ -105,7 +105,7 @@ Item {
                     startAngle: root.startAngle
                     sweepAngle: (root.valueAngle - root.startAngle)
                 }
-                Behavior on strokeColor { ColorAnimation { duration: Theme.toggleTimer }}
+                Behavior on strokeColor { ColorAnimation { duration: themeService.toggleTimer }}
             }
         }
 
@@ -125,10 +125,10 @@ Item {
                 width: 2
                 height: tickHeight
                 radius: 1
-                color: isMajor ? root.textColor : Theme.textMuted
+                color: isMajor ? root.textColor : themeService.textMuted
                 rotation: tickAngle + 90
                 antialiasing: true
-                Behavior on color { ColorAnimation { duration: Theme.toggleTimer }}
+                Behavior on color { ColorAnimation { duration: themeService.toggleTimer }}
             }
         }
 
@@ -149,7 +149,7 @@ Item {
                 color: root.textColor
                 horizontalAlignment: Text.AlignHCenter
                 width: 30
-                Behavior on color { ColorAnimation { duration: Theme.toggleTimer }}
+                Behavior on color { ColorAnimation { duration: themeService.toggleTimer }}
             }
         }
 
@@ -198,7 +198,7 @@ Item {
             height: root.radius
             radius: 1
             color: root.needleColor
-            Behavior on color { ColorAnimation { duration: Theme.toggleTimer }}
+            Behavior on color { ColorAnimation { duration: themeService.toggleTimer }}
             x: root.centerX - width / 2
             y: root.centerY - height
             transformOrigin: Item.Bottom
@@ -222,12 +222,12 @@ Item {
             height: coverRadius
             radius: width / 2
             anchors.centerIn: parent
-            border.color: Theme.darkBorder
+            border.color: themeService.darkBorder
             border.width: 1
             gradient: Gradient {
                 orientation: Gradient.Vertical
-                GradientStop { position: 0.0; color: Theme.darkGradientInner }
-                GradientStop { position: 1.0; color: Theme.darkGradientOuter }
+                GradientStop { position: 0.0; color: themeService.darkGradientInner }
+                GradientStop { position: 1.0; color: themeService.darkGradientOuter }
             }
         }
 
@@ -239,20 +239,20 @@ Item {
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: root.value.toFixed(root.decimals)
-                font.family: Theme.fontOxanium
+                font.family: themeService.fontOxanium
                 font.weight: Font.Bold
                 font.pixelSize: 72
-                color: Theme.darkForeground
-                Behavior on color { ColorAnimation { duration: Theme.toggleTimer }}
+                color: themeService.darkForeground
+                Behavior on color { ColorAnimation { duration: themeService.toggleTimer }}
             }
 
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: root.unit
-                font.family: Theme.fontQuicksand
+                font.family: themeService.fontQuicksand
                 font.pixelSize: 16
-                color: Theme.darkTextMuted
-                Behavior on color { ColorAnimation { duration: Theme.toggleTimer }}
+                color: themeService.darkTextMuted
+                Behavior on color { ColorAnimation { duration: themeService.toggleTimer }}
             }
         }
     }

@@ -11,6 +11,6 @@ ColumnLayout {
 
     Text {
         text: "settings"
-        color: Theme.foreground
+        color: themeService.foreground
     }
 }

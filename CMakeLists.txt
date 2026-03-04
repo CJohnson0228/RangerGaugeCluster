@@ -17,19 +17,20 @@ qt_standard_project_setup(REQUIRES 6.10)
 
 qt_add_executable(HMItest
         src/main.cpp
+        src/VehicleState.h
+        src/VehicleState.cpp
+        src/ThemeService.h
+        src/ThemeService.cpp
 )
 
-set_source_files_properties(qml/theme/Theme.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
-set_source_files_properties(qml/vehicleState/VehicleState.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 
 qt_add_qml_module(HMItest
         URI HMItestUI
         VERSION 1.0
         SOURCES
         QML_FILES
-        qml/Main.qml
-        qml/theme/Theme.qml
-        qml/vehicleState/VehicleState.qml
+        qml/ClusterView.qml
+        qml/InfotainmentView.qml
         qml/Speedo.qml
         qml/Tach.qml
         qml/InstrumentData.qml

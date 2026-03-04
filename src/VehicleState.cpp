@@ -1,0 +1,25 @@
+//
+// Created by chris on 3/3/26.
+//
+
+#include "VehicleState.h"
+
+VehicleState::VehicleState(QObject *parent) : QObject(parent) {}
+
+void VehicleState::setTirePressLF(int v) { if (m_tirePressLF != v) { m_tirePressLF = v; emit tirePressLFChanged(); } }
+void VehicleState::setTirePressRF(int v) { if (m_tirePressRF != v) { m_tirePressRF = v; emit tirePressRFChanged(); } }
+void VehicleState::setTirePressLR(int v) { if (m_tirePressLR != v) { m_tirePressLR = v; emit tirePressLRChanged(); } }
+void VehicleState::setTirePressRR(int v) { if (m_tirePressRR != v) { m_tirePressRR = v; emit tirePressRRChanged(); } }
+void VehicleState::setVehicleSpeed(qreal v) { if (m_vehicleSpeed != v) { m_vehicleSpeed = v; emit vehicleSpeedChanged(); } }
+void VehicleState::setEngineRPM(qreal v) { if (m_engineRPM != v) { m_engineRPM = v; emit engineRPMChanged(); } }
+void VehicleState::setFuelEconomyLive(qreal v) { if (m_fuelEconomyLive != v) { m_fuelEconomyLive = v; emit fuelEconomyLiveChanged(); } }
+void VehicleState::setFuelEconomyAverage(qreal v) { if (m_fuelEconomyAverage != v) { m_fuelEconomyAverage = v; emit fuelEconomyAverageChanged(); } }
+void VehicleState::setTripAmileage(qreal v) { if (m_tripAmileage != v) { m_tripAmileage = v; emit tripAmileageChanged(); } }
+void VehicleState::setTripBmileage(qreal v) { if (m_tripBmileage != v) { m_tripBmileage = v; emit tripBmileageChanged(); } }
+void VehicleState::setLeftTurnActive(bool v) { if (m_leftTurnActive != v) { m_leftTurnActive = v; emit leftTurnActiveChanged(); } }
+void VehicleState::setRightTurnActive(bool v) { if (m_rightTurnActive != v) { m_rightTurnActive = v; emit rightTurnActiveChanged(); } }
+void VehicleState::setActiveDataIndex(int v) { if (m_activeDataIndex != v) { m_activeDataIndex = v; emit activeDataIndexChanged(); } }
+void VehicleState::setMediaSourceImage(const QString &v) { if (m_mediaSourceImage != v) { m_mediaSourceImage = v; emit mediaSourceImageChanged(); } }
+void VehicleState::setMediaBandName(const QString &v) { if (m_mediaBandName != v) { m_mediaBandName = v; emit mediaBandNameChanged(); } }
+void VehicleState::setMediaSongName(const QString &v) { if (m_mediaSongName != v) { m_mediaSongName = v; emit mediaSongNameChanged(); } }
+void VehicleState::setDarkMode(bool v) { if (m_darkMode != v) { m_darkMode = v; emit darkModeChanged(); } }

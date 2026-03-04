@@ -7,11 +7,11 @@ Text {
     id: root
     property int tirePress
     text: tirePress
-    font.family: Theme.fontOxanium
+    font.family: themeService.fontOxanium
     font.pixelSize: 24
-    color: Theme.foreground
+    color: themeService.foreground
 
-    Behavior on color { ColorAnimation { duration: Theme.toggleTimer }}
+    Behavior on color { ColorAnimation { duration: themeService.toggleTimer }}
 
     // Caution Low Pressure Indicator
     Shape {
@@ -28,7 +28,7 @@ Text {
                 centerX: 25; centerY: 25
                 centerRadius: 25
                 focalX: centerX; focalY: centerY
-                GradientStop { position: 0.0; color: Theme.darkAccent }
+                GradientStop { position: 0.0; color: themeService.darkAccent }
                 GradientStop { position: 1.0; color: "transparent" }
             }
             PathAngleArc {
@@ -61,7 +61,7 @@ Text {
                 centerX: 25; centerY: 25
                 centerRadius: 25
                 focalX: centerX; focalY: centerY
-                GradientStop { position: 0.0; color: Theme.error }
+                GradientStop { position: 0.0; color: themeService.error }
                 GradientStop { position: 1.0; color: "transparent" }
             }
             PathAngleArc {

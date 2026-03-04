@@ -5,27 +5,27 @@ Item {
     id: root
     anchors.fill: parent
 
+    Component.onCompleted: themeService.backgroundItem = root
+
     Image {
         id: lightBG
         anchors.fill: parent
-        source: Theme.imagePath + "bg_light.jpg"
+        source: themeService.imagePath + "bg_light.jpg"
         fillMode: Image.PreserveAspectCrop
-        opacity: Theme.isDarkMode ? 0.0 : 1.0
-
+        opacity: themeService.darkMode ? 0.0 : 1.0
         Behavior on opacity {
-            NumberAnimation { duration: Theme.toggleTimer; easing.type: Easing.InOutQuad }
+            NumberAnimation { duration: themeService.toggleTimer; easing.type: Easing.InOutQuad }
         }
     }
 
     Image {
         id: darkBG
         anchors.fill: parent
-        source: Theme.imagePath + "bg_dark.jpg"
+        source: themeService.imagePath + "bg_dark.jpg"
         fillMode: Image.PreserveAspectCrop
-        opacity: Theme.isDarkMode ? 1.0 : 0.0
-
+        opacity: themeService.darkMode ? 1.0 : 0.0
         Behavior on opacity {
-            NumberAnimation { duration: Theme.toggleTimer; easing.type: Easing.InOutQuad }
+            NumberAnimation { duration: themeService.toggleTimer; easing.type: Easing.InOutQuad }
         }
     }
 }

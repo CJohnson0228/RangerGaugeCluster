@@ -1,34 +1,29 @@
-// DevPanel.qml
-// DEV-ONLY TESTING PANEL - Remove Loader in main.qml for production
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import HMItestUI
 
-Window {
+ApplicationWindow {
     id: root
-    property var leftBlinkerTimer
-    property var rightBlinkerTimer
-    visible: false
+    visible: true
     x: 0
     y: 0
     width: 400
     height: 800
+    title: "Dev Panel"
 
-
-    // Dev - Timer to simulate blinker
     Timer {
         id: leftBlinkTimer
         interval: 500
         repeat: true
-        onTriggered: VehicleState.leftTurnActive = !VehicleState.leftTurnActive
+        onTriggered: vehicleState.leftTurnActive = !vehicleState.leftTurnActive
     }
 
     Timer {
         id: rightBlinkTimer
         interval: 500
         repeat: true
-        onTriggered: VehicleState.rightTurnActive = !VehicleState.rightTurnActive
+        onTriggered: vehicleState.rightTurnActive = !vehicleState.rightTurnActive
     }
 
     GridLayout {
@@ -36,48 +31,45 @@ Window {
         columns: 2
         columnSpacing: 2
 
-        // Left Turn Simulator
         Button {
             Layout.fillWidth: true
             text: "Left Turn"
             onClicked: {
-                if (leftBlinkerTimer.running) {
-                    leftBlinkerTimer.stop()
-                    VehicleState.leftTurnActive = false
+                if (leftBlinkTimer.running) {
+                    leftBlinkTimer.stop()
+                    vehicleState.leftTurnActive = false
                 } else {
-                    leftBlinkerTimer.start()
+                    leftBlinkTimer.start()
                 }
             }
         }
 
-        // Right Turn Simulator
         Button {
             Layout.fillWidth: true
             text: "Right Turn"
             onClicked: {
-                if (rightBlinkerTimer.running) {
-                    rightBlinkerTimer.stop()
-                    VehicleState.rightTurnActive = false
+                if (rightBlinkTimer.running) {
+                    rightBlinkTimer.stop()
+                    vehicleState.rightTurnActive = false
                 } else {
-                    rightBlinkerTimer.start()
+                    rightBlinkTimer.start()
                 }
             }
         }
 
-        // Hazard Simulator
         Button {
             Layout.columnSpan: 2
             Layout.fillWidth: true
             text: "Hazards"
             onClicked: {
-                if (leftBlinkerTimer.running || rightBlinkerTimer.running) {
-                    leftBlinkerTimer.stop()
-                    rightBlinkerTimer.stop()
-                    VehicleState.leftTurnActive = false
-                    VehicleState.rightTurnActive = false
+                if (leftBlinkTimer.running || rightBlinkTimer.running) {
+                    leftBlinkTimer.stop()
+                    rightBlinkTimer.stop()
+                    vehicleState.leftTurnActive = false
+                    vehicleState.rightTurnActive = false
                 } else {
-                    leftBlinkerTimer.start()
-                    rightBlinkerTimer.start()
+                    leftBlinkTimer.start()
+                    rightBlinkTimer.start()
                 }
             }
         }
@@ -86,98 +78,50 @@ Window {
             Layout.columnSpan: 2
             Layout.fillWidth: true
             text: "Gauge Sliders"
-            color: Theme.foreground
+            color: "white"
         }
 
-        // Speedo Simulator
         Slider {
             Layout.alignment: Qt.AlignCenter
-            from: 0
-            to: 120
-            value: VehicleState.vehicleSpeed
-            onValueChanged: VehicleState.vehicleSpeed = value
+            from: 0; to: 120
+            value: vehicleState.vehicleSpeed
+            onValueChanged: vehicleState.vehicleSpeed = value
         }
 
-        // Tacho Simulator
         Slider {
             Layout.alignment: Qt.AlignCenter
-            from: 0
-            to: 7
-            value: VehicleState.engineRPM
-            onValueChanged: VehicleState.engineRPM = value
+            from: 0; to: 7000
+            value: vehicleState.engineRPM
+            onValueChanged: vehicleState.engineRPM = value
         }
-
 
         Text {
             Layout.columnSpan: 2
             Layout.fillWidth: true
-            text: "Tire Sliders"
-            color: Theme.foreground
-        }
-        // lF Simulator
-        Slider {
-            Layout.alignment: Qt.AlignCenter
-            from: 0
-            to: 50
-            value: VehicleState.tirePressLF
-            onValueChanged: VehicleState.tirePressLF = value
-        }
-        // RF Simulator
-        Slider {
-            Layout.alignment: Qt.AlignCenter
-            from: 0
-            to: 50
-            value: VehicleState.tirePressRF
-            onValueChanged: VehicleState.tirePressRF = value
-        }
-        // LR Simulator
-        Slider {
-            Layout.alignment: Qt.AlignCenter
-            from: 0
-            to: 50
-            value: VehicleState.tirePressLR
-            onValueChanged: VehicleState.tirePressLR = value
-        }
-        // RR Simulator
-        Slider {
-            Layout.alignment: Qt.AlignCenter
-            from: 0
-            to: 50
-            value: VehicleState.tirePressRR
-            onValueChanged: VehicleState.tirePressRR = value
+            text: "Tire Pressures"
+            color: "white"
         }
 
-        // Data Selection Simulator
+        Slider { Layout.alignment: Qt.AlignCenter; from: 0; to: 50; value: vehicleState.tirePressLF; onValueChanged: vehicleState.tirePressLF = value }
+        Slider { Layout.alignment: Qt.AlignCenter; from: 0; to: 50; value: vehicleState.tirePressRF; onValueChanged: vehicleState.tirePressRF = value }
+        Slider { Layout.alignment: Qt.AlignCenter; from: 0; to: 50; value: vehicleState.tirePressLR; onValueChanged: vehicleState.tirePressLR = value }
+        Slider { Layout.alignment: Qt.AlignCenter; from: 0; to: 50; value: vehicleState.tirePressRR; onValueChanged: vehicleState.tirePressRR = value }
+
         Button {
             Layout.fillWidth: true
             Layout.columnSpan: 2
-            text: "Data click"
-            onClicked: VehicleState.activeDataIndex = (VehicleState.activeDataIndex + 1) % 3
+            text: "Next Data View"
+            onClicked: vehicleState.activeDataIndex = (vehicleState.activeDataIndex + 1) % 3
         }
 
-        // Theme Toggle
         Button {
             Layout.fillWidth: true
             Layout.columnSpan: 2
-            text: "Theme Toggle"
-            onClicked: Theme.isDarkMode = !Theme.isDarkMode
+            text: "Toggle themeService"
+            onClicked: themeService.darkMode = !themeService.darkMode
         }
 
-        // live fuel eco Simulator
-        Slider {
-            Layout.alignment: Qt.AlignCenter
-            from: 0
-            to: 30
-            value: VehicleState.fuelEconomyLive
-            onValueChanged: VehicleState.fuelEconomyLive = value
-        }
-        // Average fuel eco Simulator
-        Slider {
-            Layout.alignment: Qt.AlignCenter
-            from: 0
-            to: 30
-            value: VehicleState.fuelEconomyAverage
-            onValueChanged: VehicleState.fuelEconomyAverage = value
-        }
+        Slider { Layout.alignment: Qt.AlignCenter; from: 0; to: 30; value: vehicleState.fuelEconomyLive; onValueChanged: vehicleState.fuelEconomyLive = value }
+        Slider { Layout.alignment: Qt.AlignCenter; from: 0; to: 30; value: vehicleState.fuelEconomyAverage; onValueChanged: vehicleState.fuelEconomyAverage = value }
     }
 }

@@ -5,8 +5,8 @@ import HMItestUI
 Item {
     id: root
     property bool active: false
-    property color pillColor: active ? Theme.darkPrimary : "transparent"
-    property color textColor: active ? Theme.darkBackground : Theme.darkTextMuted
+    property color pillColor: active ? themeService.darkPrimary : "transparent"
+    property color textColor: active ? themeService.darkBackground : themeService.darkTextMuted
     property string label: ""
     property string iconSource: ""
     height: 30
@@ -46,7 +46,7 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         text: root.label
         color: root.textColor
-        font.family: Theme.fontQuicksand
+        font.family: themeService.fontQuicksand
         font.pixelSize: 16
         opacity: root.active ? 1.0 : 0.0
         Behavior on opacity { NumberAnimation { duration: 200 }}

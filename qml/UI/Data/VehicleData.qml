@@ -22,15 +22,15 @@ RowLayout {
         Text {
             Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
             text: "Tire Pressures"
-            color: Theme.foreground
-            Behavior on color { ColorAnimation { duration: Theme.toggleTimer }}
+            color: themeService.foreground
+            Behavior on color { ColorAnimation { duration: themeService.toggleTimer }}
         }
 
         Text {
             Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
             text: "PSI"
-            color: Theme.textMuted
-            Behavior on color { ColorAnimation { duration: Theme.toggleTimer }}
+            color: themeService.textMuted
+            Behavior on color { ColorAnimation { duration: themeService.toggleTimer }}
         }
 
         RowLayout {
@@ -49,7 +49,7 @@ RowLayout {
                     anchors.topMargin: 60
                     anchors.horizontalCenter: parent.horizontalCenter
 
-                    tirePress: VehicleState.tirePressLF
+                    tirePress: vehicleState.tirePressLF
                 }
 
                 TirePressReading {
@@ -57,7 +57,7 @@ RowLayout {
                     anchors.bottom: parent.bottom
                     anchors.bottomMargin: 60
                     anchors.horizontalCenter: parent.horizontalCenter
-                    tirePress: VehicleState.tirePressLR
+                    tirePress: vehicleState.tirePressLR
                 }
             }
 
@@ -66,13 +66,13 @@ RowLayout {
                 Layout.preferredWidth: 100
                 Layout.preferredHeight: 200
                 Layout.alignment: Qt.AlignCenter
-                source: Theme.imagePath + "TopView.svg"
+                source: themeService.imagePath + "TopView.svg"
                 fillMode: Image.PreserveAspectFit
                 layer.enabled: true
                 layer.effect: MultiEffect {
                     colorization: 1.0
-                    colorizationColor: Theme.muted
-                    Behavior on colorization { ColorAnimation { duration: Theme.toggleTimer }}
+                    colorizationColor: themeService.muted
+                    Behavior on colorization { ColorAnimation { duration: themeService.toggleTimer }}
                 }
             }
 
@@ -87,7 +87,7 @@ RowLayout {
                     anchors.topMargin: 60
                     anchors.horizontalCenter: parent.horizontalCenter
 
-                    tirePress: VehicleState.tirePressRF
+                    tirePress: vehicleState.tirePressRF
                 }
 
                 TirePressReading {
@@ -96,7 +96,7 @@ RowLayout {
                     anchors.bottomMargin: 60
                     anchors.horizontalCenter: parent.horizontalCenter
 
-                    tirePress: VehicleState.tirePressRR
+                    tirePress: vehicleState.tirePressRR
                 }
             }
         }
@@ -108,15 +108,15 @@ RowLayout {
             Text {
                 anchors.left: parent.left
                 text: "Fuel Economy:"
-                color: Theme.textMuted
-                Behavior on color { ColorAnimation { duration: Theme.toggleTimer }}
+                color: themeService.textMuted
+                Behavior on color { ColorAnimation { duration: themeService.toggleTimer }}
             }
 
             Text {
                 anchors.right: parent.right
-                text: VehicleState.fuelEconomyAverage.toFixed(2) + " (MPG)"
-                color: Theme.foreground
-                Behavior on color { ColorAnimation { duration: Theme.toggleTimer }}
+                text: vehicleState.fuelEconomyAverage.toFixed(2) + " (MPG)"
+                color: themeService.foreground
+                Behavior on color { ColorAnimation { duration: themeService.toggleTimer }}
             }
         }
     }
@@ -130,8 +130,8 @@ RowLayout {
         Text {
             Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
             text: "Fuel Eco"
-            color: Theme.foreground
-            Behavior on color { ColorAnimation { duration: Theme.toggleTimer }}
+            color: themeService.foreground
+            Behavior on color { ColorAnimation { duration: themeService.toggleTimer }}
         }
 
         Item {
@@ -148,17 +148,17 @@ RowLayout {
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
                 border.width: 1
-                border.color: Theme.muted
+                border.color: themeService.muted
                 width: 20
-                color: Theme.darkBackground
-                Behavior on color { ColorAnimation { duration: Theme.toggleTimer }}
-                Behavior on border.color { ColorAnimation { duration: Theme.toggleTimer }}
+                color: themeService.darkBackground
+                Behavior on color { ColorAnimation { duration: themeService.toggleTimer }}
+                Behavior on border.color { ColorAnimation { duration: themeService.toggleTimer }}
 
                 Rectangle {
                     anchors.bottom: parent.bottom
                     width: parent.width
-                    height: parent.height * (VehicleState.fuelEconomyLive / 30)
-                    color: Theme.primary
+                    height: parent.height * (vehicleState.fuelEconomyLive / 30)
+                    color: themeService.primary
                 }
             }
 
@@ -184,9 +184,9 @@ RowLayout {
                     Rectangle {
                         width: parent.width
                         height: 1
-                        color: Theme.muted
+                        color: themeService.muted
                         opacity: modelData.major ? 1.0 : 0.5
-                        Behavior on color { ColorAnimation { duration: Theme.toggleTimer }}
+                        Behavior on color { ColorAnimation { duration: themeService.toggleTimer }}
                     }
 
                     Text {
@@ -195,10 +195,10 @@ RowLayout {
                         anchors.leftMargin: 3
                         anchors.verticalCenter: parent.verticalCenter
                         text: modelData.value
-                        font.family: Theme.fontOxanium
+                        font.family: themeService.fontOxanium
                         font.pixelSize: 10
-                        color: Theme.foreground
-                        Behavior on color { ColorAnimation { duration: Theme.toggleTimer }}
+                        color: themeService.foreground
+                        Behavior on color { ColorAnimation { duration: themeService.toggleTimer }}
                     }
                 }
             }

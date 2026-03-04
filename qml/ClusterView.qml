@@ -9,46 +9,14 @@ ApplicationWindow {
     width: 1920
     height: 550
     visible: true
-    title: "Ranger HMI"
-    color: Theme.background
-    Behavior on color { ColorAnimation { duration: Theme.toggleTimer }}
-
-    // Dev - Controls Toggle
-    Button {
-        anchors.left: parent.left
-        anchors.bottom: parent.bottom
-        height: 40
-        width: 40
-        z: 1
-        onClicked: devPanel.visible = !devPanel.visible
-
-        background: Rectangle {
-            color: Theme.paper
-            radius: 20
-        }
-
-        contentItem: Image {
-            source: Theme.iconPath + "exclamation-circle.svg"
-            sourceSize.width: width
-            sourceSize.height: height
-            layer.enabled: true
-            layer.effect: MultiEffect {
-                colorization: 1.0
-                colorizationColor: Theme.foreground
-            }
-        }
-    }
-
-    // Dev Window
-    DevPanel {
-        id: devPanel
-    }
-
+    title: "Ranger Gauge Cluster"
+    color: themeService.background
+    Behavior on color { ColorAnimation { duration: themeService.toggleTimer }}
 
     // Image Background
     AmbientBackground {
         id: ambientBackground
-        Component.onCompleted: Theme.backgroundItem = ambientBackground
+        Component.onCompleted: themeService.backgroundItem = ambientBackground
     }
 
     ColumnLayout {
@@ -58,9 +26,9 @@ ApplicationWindow {
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 60
-            color: Theme.background
+            color: themeService.background
 
-            Behavior on color { ColorAnimation { duration: Theme.toggleTimer }}
+            Behavior on color { ColorAnimation { duration: themeService.toggleTimer }}
 
             RowLayout {
                 anchors.fill: parent
@@ -75,7 +43,7 @@ ApplicationWindow {
             layer.enabled: true
             layer.effect: MultiEffect {
                 shadowEnabled: true
-                shadowColor: Theme.darkBackground
+                shadowColor: themeService.darkBackground
                 Behavior on shadowColor { ColorAnimation { duration: 200 }}
                 shadowScale: 1.0
                 shadowVerticalOffset: 2
@@ -93,23 +61,23 @@ ApplicationWindow {
                     orientation: Gradient.Vertical
                     GradientStop {
                         position: 0.0
-                        color: Theme.themeGradientOuter
-                        Behavior on color { ColorAnimation { duration: Theme.toggleTimer }}
+                        color: themeService.gradientOuter
+                        Behavior on color { ColorAnimation { duration: themeService.toggleTimer }}
                     }
                     GradientStop {
                         position: 0.25
-                        color: Theme.themeGradientInner
-                        Behavior on color { ColorAnimation { duration: Theme.toggleTimer }}
+                        color: themeService.gradientInner
+                        Behavior on color { ColorAnimation { duration: themeService.toggleTimer }}
                     }
                     GradientStop {
                         position: 0.75
-                        color: Theme.themeGradientInner
-                        Behavior on color { ColorAnimation { duration: Theme.toggleTimer }}
+                        color: themeService.gradientInner
+                        Behavior on color { ColorAnimation { duration: themeService.toggleTimer }}
                     }
                     GradientStop {
                         position: 1.0
-                        color: Theme.themeGradientOuter
-                        Behavior on color { ColorAnimation { duration: Theme.toggleTimer }}
+                        color: themeService.gradientOuter
+                        Behavior on color { ColorAnimation { duration: themeService.toggleTimer }}
                     }
                 }
 
@@ -118,7 +86,7 @@ ApplicationWindow {
 
                     Speedo {
                         id: speedo
-                        value: VehicleState.vehicleSpeed
+                        value: vehicleState.vehicleSpeed
                         Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
                         Layout.leftMargin: 8
                     }
@@ -130,7 +98,7 @@ ApplicationWindow {
 
                     Tach {
                         id: tach
-                        value: VehicleState.engineRPM
+                        value: ( vehicleState.engineRPM / 1000 )
                         Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
                         Layout.rightMargin: 8
                     }
@@ -142,9 +110,9 @@ ApplicationWindow {
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: 80
-            color: Theme.background
+            color: themeService.background
 
-            Behavior on color { ColorAnimation { duration: Theme.toggleTimer }}
+            Behavior on color { ColorAnimation { duration: themeService.toggleTimer }}
         }
     }
 }
