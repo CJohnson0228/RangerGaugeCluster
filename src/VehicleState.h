@@ -10,7 +10,7 @@ class VehicleState : public QObject
 {
     Q_OBJECT
 
-    // Vehicle Data
+    // Vehicle General
     Q_PROPERTY(int tirePressLF READ tirePressLF WRITE setTirePressLF NOTIFY tirePressLFChanged)
     Q_PROPERTY(int tirePressRF READ tirePressRF WRITE setTirePressRF NOTIFY tirePressRFChanged)
     Q_PROPERTY(int tirePressLR READ tirePressLR WRITE setTirePressLR NOTIFY tirePressLRChanged)
@@ -24,6 +24,16 @@ class VehicleState : public QObject
     Q_PROPERTY(bool leftTurnActive READ leftTurnActive WRITE setLeftTurnActive NOTIFY leftTurnActiveChanged)
     Q_PROPERTY(bool rightTurnActive READ rightTurnActive WRITE setRightTurnActive NOTIFY rightTurnActiveChanged)
     Q_PROPERTY(int activeDataIndex READ activeDataIndex WRITE setActiveDataIndex NOTIFY activeDataIndexChanged)
+
+    // Vehicle Warning Indicators
+    Q_PROPERTY(bool batteryWarningActive READ batteryWarningActive WRITE setBatteryWarningActive NOTIFY batteryWarningActiveChanged)
+    Q_PROPERTY(bool brakeWarningActive READ brakeWarningActive WRITE setBrakeWarningActive NOTIFY brakeWarningActiveChanged)
+    Q_PROPERTY(bool coolantTempWarningActive READ coolantTempWarningActive WRITE setCoolantTempWarningActive NOTIFY coolantTempWarningActiveChanged)
+    Q_PROPERTY(bool parkingBrakeWarningActive READ parkingBrakeWarningActive WRITE setParkingBrakeWarningActive NOTIFY parkingBrakeWarningActiveChanged)
+    Q_PROPERTY(bool oilWarningActive READ oilWarningActive WRITE setOilWarningActive NOTIFY oilWarningActiveChanged)
+    Q_PROPERTY(bool checkEngineCautionActive READ checkEngineCautionActive WRITE setCheckEngineCautionActive NOTIFY checkEngineCautionActiveChanged)
+    Q_PROPERTY(bool lowFuelCautionActive READ lowFuelCautionActive WRITE setLowFuelCautionActive NOTIFY lowFuelCautionActiveChanged)
+    Q_PROPERTY(bool tirePressCautionActive READ tirePressCautionActive WRITE setTirePressCautionActive NOTIFY tirePressCautionActiveChanged)
 
     // Media (temporary until MediaService)
     Q_PROPERTY(QString mediaSourceImage READ mediaSourceImage WRITE setMediaSourceImage NOTIFY mediaSourceImageChanged)
@@ -54,6 +64,14 @@ public:
     QString mediaBandName() const { return m_mediaBandName; }
     QString mediaSongName() const { return m_mediaSongName; }
     bool darkMode() const { return m_darkMode; }
+    bool batteryWarningActive() const { return m_batteryWarningActive; }
+    bool brakeWarningActive() const { return m_brakeWarningActive; }
+    bool coolantTempWarningActive() const { return m_coolantTempWarningActive; }
+    bool parkingBrakeWarningActive() const { return m_parkingBrakeWarningActive; }
+    bool oilWarningActive() const { return m_oilWarningActive; }
+    bool checkEngineCautionActive() const { return m_checkEngineCautionActive; }
+    bool lowFuelCautionActive() const { return m_lowFuelCautionActive; }
+    bool tirePressCautionActive() const { return m_tirePressCautionActive; }
 
     // Setters
 public slots:
@@ -69,6 +87,14 @@ public slots:
     void setTripBmileage(qreal v);
     void setLeftTurnActive(bool v);
     void setRightTurnActive(bool v);
+    void setBatteryWarningActive(bool v);
+    void setBrakeWarningActive(bool v);
+    void setCoolantTempWarningActive(bool v);
+    void setParkingBrakeWarningActive(bool v);
+    void setOilWarningActive(bool v);
+    void setCheckEngineCautionActive(bool v);
+    void setLowFuelCautionActive(bool v);
+    void setTirePressCautionActive(bool v);
     void setActiveDataIndex(int v);
     void setMediaSourceImage(const QString &v);
     void setMediaBandName(const QString &v);
@@ -93,6 +119,14 @@ signals:
     void mediaBandNameChanged();
     void mediaSongNameChanged();
     void darkModeChanged();
+    void batteryWarningActiveChanged();
+    void brakeWarningActiveChanged();
+    void coolantTempWarningActiveChanged();
+    void parkingBrakeWarningActiveChanged();
+    void oilWarningActiveChanged();
+    void checkEngineCautionActiveChanged();
+    void lowFuelCautionActiveChanged();
+    void tirePressCautionActiveChanged();
 
 private:
     int m_tirePressLF = 32;
@@ -107,6 +141,14 @@ private:
     qreal m_tripBmileage = 0.0;
     bool m_leftTurnActive = false;
     bool m_rightTurnActive = false;
+    bool m_batteryWarningActive = false;
+    bool m_brakeWarningActive = false;
+    bool m_coolantTempWarningActive = false;
+    bool m_parkingBrakeWarningActive = false;
+    bool m_oilWarningActive = false;
+    bool m_checkEngineCautionActive = false;
+    bool m_lowFuelCautionActive = false;
+    bool m_tirePressCautionActive = false;
     int m_activeDataIndex = 0;
     QString m_mediaSourceImage = "tool.jpg";
     QString m_mediaBandName = "Tool";

@@ -45,7 +45,7 @@ ColumnLayout {
                     Layout.preferredWidth: width
                     Layout.alignment: Qt.AlignVCenter
                     active: vehicleState.activeDataIndex === 0
-                    label: "Truck Data"
+                    label: "Truck General"
                     iconSource: themeService.iconPath + "pickup-truck.svg"
                 }
 
@@ -78,7 +78,7 @@ ColumnLayout {
         }
     }
 
-    // Media & Data Display
+    // Media & General Display
     Item {
         Layout.fillHeight: true
         Layout.fillWidth: true

@@ -23,3 +23,12 @@ void VehicleState::setMediaSourceImage(const QString &v) { if (m_mediaSourceImag
 void VehicleState::setMediaBandName(const QString &v) { if (m_mediaBandName != v) { m_mediaBandName = v; emit mediaBandNameChanged(); } }
 void VehicleState::setMediaSongName(const QString &v) { if (m_mediaSongName != v) { m_mediaSongName = v; emit mediaSongNameChanged(); } }
 void VehicleState::setDarkMode(bool v) { if (m_darkMode != v) { m_darkMode = v; emit darkModeChanged(); } }
+
+void VehicleState::setBatteryWarningActive(bool v) { if (m_batteryWarningActive != v) { m_batteryWarningActive = v; emit batteryWarningActiveChanged(); } }
+void VehicleState::setBrakeWarningActive(bool v) { if (m_brakeWarningActive != v) { m_brakeWarningActive = v; emit brakeWarningActiveChanged(); } }
+void VehicleState::setCoolantTempWarningActive(bool v) { if (m_coolantTempWarningActive != v) { m_coolantTempWarningActive = v; emit coolantTempWarningActiveChanged(); } }
+void VehicleState::setParkingBrakeWarningActive(bool v) { if (m_parkingBrakeWarningActive != v) { m_parkingBrakeWarningActive = v; emit parkingBrakeWarningActiveChanged(); } }
+void VehicleState::setOilWarningActive(bool v) { if (m_oilWarningActive != v) { m_oilWarningActive = v; emit oilWarningActiveChanged(); } }
+void VehicleState::setCheckEngineCautionActive(bool v) { if (m_checkEngineCautionActive != v) { m_checkEngineCautionActive = v; emit checkEngineCautionActiveChanged(); } }
+void VehicleState::setLowFuelCautionActive(bool v) { if (m_lowFuelCautionActive != v) { m_lowFuelCautionActive = v; emit lowFuelCautionActiveChanged(); } }
+void VehicleState::setTirePressCautionActive(bool v) { if (m_tirePressCautionActive != v) { m_tirePressCautionActive = v; emit tirePressCautionActiveChanged(); } }

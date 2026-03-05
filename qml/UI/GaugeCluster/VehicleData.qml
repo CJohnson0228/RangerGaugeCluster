@@ -1,4 +1,4 @@
-// Vehicle Data Window for InstrumentData display
+// Vehicle General Window for InstrumentData display
 // Settings Window for InstrumentData display
 import QtQuick
 import QtQuick.Layouts
@@ -121,7 +121,7 @@ RowLayout {
         }
     }
 
-    // Data
+    // General
     ColumnLayout {
         Layout.fillHeight: true
         Layout.fillWidth: true

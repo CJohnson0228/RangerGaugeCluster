@@ -8,6 +8,8 @@ ApplicationWindow {
     id: window
     width: 1080
     height: 1920
+    x: 0
+    y: 0
     visible: true
     title: "Ranger Infotainment UI"
     color: themeService.background

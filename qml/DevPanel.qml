@@ -6,8 +6,6 @@ import HMItestUI
 ApplicationWindow {
     id: root
     visible: true
-    x: 0
-    y: 0
     width: 400
     height: 800
     title: "Dev Panel"
@@ -110,7 +108,7 @@ ApplicationWindow {
         Button {
             Layout.fillWidth: true
             Layout.columnSpan: 2
-            text: "Next Data View"
+            text: "Next General View"
             onClicked: vehicleState.activeDataIndex = (vehicleState.activeDataIndex + 1) % 3
         }
 
@@ -121,7 +119,50 @@ ApplicationWindow {
             onClicked: themeService.darkMode = !themeService.darkMode
         }
 
+        Text { text: "Fuel Eco Current"; color: "white" }
         Slider { Layout.alignment: Qt.AlignCenter; from: 0; to: 30; value: vehicleState.fuelEconomyLive; onValueChanged: vehicleState.fuelEconomyLive = value }
+        Text { text: "Fuel Eco Current"; color: "white" }
         Slider { Layout.alignment: Qt.AlignCenter; from: 0; to: 30; value: vehicleState.fuelEconomyAverage; onValueChanged: vehicleState.fuelEconomyAverage = value }
+
+        Button {
+            Layout.fillWidth: true
+            text: "Battery Warning"
+            onClicked: vehicleState.batteryWarningActive = !vehicleState.batteryWarningActive
+        }
+        Button {
+            Layout.fillWidth: true
+            text: "Brake Warning"
+            onClicked: vehicleState.brakeWarningActive = !vehicleState.brakeWarningActive
+        }
+        Button {
+            Layout.fillWidth: true
+            text: "Coolant Temp"
+            onClicked: vehicleState.coolantTempWarningActive = !vehicleState.coolantTempWarningActive
+        }
+        Button {
+            Layout.fillWidth: true
+            text: "Parking Brake"
+            onClicked: vehicleState.parkingBrakeWarningActive = !vehicleState.parkingBrakeWarningActive
+        }
+        Button {
+            Layout.fillWidth: true
+            text: "Oil Warning"
+            onClicked: vehicleState.oilWarningActive = !vehicleState.oilWarningActive
+        }
+        Button {
+            Layout.fillWidth: true
+            text: "Check Engine"
+            onClicked: vehicleState.checkEngineCautionActive = !vehicleState.checkEngineCautionActive
+        }
+        Button {
+            Layout.fillWidth: true
+            text: "Low Fuel"
+            onClicked: vehicleState.lowFuelCautionActive = !vehicleState.lowFuelCautionActive
+        }
+        Button {
+            Layout.fillWidth: true
+            text: "Tire Pressure"
+            onClicked: vehicleState.tirePressCautionActive = !vehicleState.tirePressCautionActive
+        }
     }
 }

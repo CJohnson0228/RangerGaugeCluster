@@ -29,21 +29,21 @@ qt_add_qml_module(HMItest
         VERSION 1.0
         SOURCES
         QML_FILES
+        qml/DevPanel.qml
         qml/ClusterView.qml
         qml/InfotainmentView.qml
-        qml/Speedo.qml
-        qml/Tach.qml
-        qml/InstrumentData.qml
-        qml/WarningIndicators.qml
         qml/AmbientBackground.qml
-        qml/DevPanel.qml
-        qml/UI/TurnSignal.qml
-        qml/UI/WarningIndicator.qml
-        qml/UI/Data/Media.qml
-        qml/UI/Data/Settings.qml
-        qml/UI/Data/VehicleData.qml
-        qml/UI/Data/DataIcon.qml
-        qml/UI/Data/TirePressReading.qml
+        qml/UI/GaugeCluster/DataIcon.qml
+        qml/UI/GaugeCluster/InstrumentData.qml
+        qml/UI/GaugeCluster/Speedo.qml
+        qml/UI/GaugeCluster/Media.qml
+        qml/UI/GaugeCluster/Settings.qml
+        qml/UI/GaugeCluster/Tach.qml
+        qml/UI/GaugeCluster/TirePressReading.qml
+        qml/UI/GaugeCluster/TurnSignal.qml
+        qml/UI/GaugeCluster/VehicleData.qml
+        qml/UI/GaugeCluster/WarningIndicator.qml
+        qml/UI/GaugeCluster/WarningIndicators.qml
         RESOURCES
         resources/fonts/BigShoulders.ttf
         resources/fonts/Quicksand.ttf
