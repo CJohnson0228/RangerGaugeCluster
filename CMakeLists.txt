@@ -44,6 +44,7 @@ qt_add_qml_module(HMItest
         qml/UI/GaugeCluster/VehicleData.qml
         qml/UI/GaugeCluster/WarningIndicator.qml
         qml/UI/GaugeCluster/WarningIndicators.qml
+        qml/UI/GaugeCluster/GeneralReadouts.qml
         RESOURCES
         resources/fonts/BigShoulders.ttf
         resources/fonts/Quicksand.ttf

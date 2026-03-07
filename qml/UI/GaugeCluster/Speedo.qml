@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Shapes
+import QtQuick.Layouts
 import QtQuick.Effects
 import HMItestUI
 
@@ -29,6 +30,7 @@ Item {
     property color needleColor: themeService.foreground
     property color textColor: themeService.foreground
     property color labelColor: themeService.foreground
+    property bool speeding: vehicleState.vehicleSpeed > vehicleState.localSpeedLimit
 
     readonly property real centerX: width / 2
     readonly property real centerY: height / 2
@@ -47,6 +49,57 @@ Item {
             anchors.fill: parent
             color: root.dialBackgroundColor
             Behavior on color { ColorAnimation { duration: themeService.toggleTimer }}
+        }
+
+        // Speed Limit Indicator
+        Rectangle {
+            id: speedLimitSign
+            anchors.bottom: parent.bottom
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottomMargin: 30
+            width: 55
+            height: 70
+            color: "#ffffff"
+            border.width: speeding ? 2 : 1
+            border.color: speeding ? themeService.error : "#000000"
+            radius: 5
+
+            SequentialAnimation {
+                running: speeding
+                loops: Animation.Infinite
+                ColorAnimation { target: speedLimitSign; property: "color"; to: "#ffbbbb"; duration: 400 }
+                ColorAnimation { target: speedLimitSign; property: "color"; to: "#ffffff"; duration: 400 }
+            }
+
+            Column {
+                anchors.centerIn: parent
+                spacing: 2
+
+                Text {
+                    width: 55
+                    horizontalAlignment: Text.AlignHCenter
+                    text: "SPEED"
+                    color: "#000000"
+                    font.family: themeService.fontOxanium
+                    font.pixelSize: 10
+                }
+                Text {
+                    width: 55
+                    horizontalAlignment: Text.AlignHCenter
+                    text: "LIMIT"
+                    color: "#000000"
+                    font.family: themeService.fontOxanium
+                    font.pixelSize: 10
+                }
+                Text {
+                    width: 55
+                    horizontalAlignment: Text.AlignHCenter
+                    text: vehicleState.localSpeedLimit
+                    color: speeding ? themeService.error : "#000000"
+                    font.family: themeService.fontOxanium
+                    font.pixelSize: 28
+                }
+            }
         }
 
         // Speedo Arc

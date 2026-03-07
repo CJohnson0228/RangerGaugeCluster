@@ -11,6 +11,25 @@ void VehicleState::setTirePressRF(int v) { if (m_tirePressRF != v) { m_tirePress
 void VehicleState::setTirePressLR(int v) { if (m_tirePressLR != v) { m_tirePressLR = v; emit tirePressLRChanged(); } }
 void VehicleState::setTirePressRR(int v) { if (m_tirePressRR != v) { m_tirePressRR = v; emit tirePressRRChanged(); } }
 void VehicleState::setVehicleSpeed(qreal v) { if (m_vehicleSpeed != v) { m_vehicleSpeed = v; emit vehicleSpeedChanged(); } }
+void VehicleState::setFuelGallonsRemaining(qreal v) {
+    if (m_fuelGallonsRemaining != v) {
+        m_fuelGallonsRemaining = v;
+        emit fuelGallonsRemainingChanged();
+        emit fuelLevelChanged();      // computed property depends on this
+        emit fuelRangeLeftChanged();  // computed property depends on this
+    }
+}
+
+void VehicleState::setEngineTemp(qreal v) {
+    if (m_engineTemp != v) {
+        m_engineTemp = v;
+        emit engineTempChanged();
+        emit engineTempLevelChanged(); // computed property depends on this
+    }
+}
+
+void VehicleState::setOdometer(qreal v) { if (m_odometer != v) { m_odometer = v; emit odometerChanged(); } }
+void VehicleState::setLocalSpeedLimit(qreal v) { if (m_localSpeedLimit != v) { m_localSpeedLimit = v; emit localSpeedLimitChanged(); } }
 void VehicleState::setEngineRPM(qreal v) { if (m_engineRPM != v) { m_engineRPM = v; emit engineRPMChanged(); } }
 void VehicleState::setFuelEconomyLive(qreal v) { if (m_fuelEconomyLive != v) { m_fuelEconomyLive = v; emit fuelEconomyLiveChanged(); } }
 void VehicleState::setFuelEconomyAverage(qreal v) { if (m_fuelEconomyAverage != v) { m_fuelEconomyAverage = v; emit fuelEconomyAverageChanged(); } }
@@ -32,3 +51,4 @@ void VehicleState::setOilWarningActive(bool v) { if (m_oilWarningActive != v) { 
 void VehicleState::setCheckEngineCautionActive(bool v) { if (m_checkEngineCautionActive != v) { m_checkEngineCautionActive = v; emit checkEngineCautionActiveChanged(); } }
 void VehicleState::setLowFuelCautionActive(bool v) { if (m_lowFuelCautionActive != v) { m_lowFuelCautionActive = v; emit lowFuelCautionActiveChanged(); } }
 void VehicleState::setTirePressCautionActive(bool v) { if (m_tirePressCautionActive != v) { m_tirePressCautionActive = v; emit tirePressCautionActiveChanged(); } }
+void VehicleState::setSeatbeltWarningActive(bool v) { if (m_seatbeltWarningActive != v) { m_seatbeltWarningActive = v; emit seatbeltWarningActiveChanged(); } }

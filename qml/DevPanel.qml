@@ -7,7 +7,7 @@ ApplicationWindow {
     id: root
     visible: true
     width: 400
-    height: 800
+    height: 900
     title: "Dev Panel"
 
     Timer {
@@ -119,6 +119,21 @@ ApplicationWindow {
             onClicked: themeService.darkMode = !themeService.darkMode
         }
 
+        Text {
+            Layout.columnSpan: 2
+            text: "Speed Limit"
+            color: "white"
+        }
+        SpinBox {
+            Layout.columnSpan: 2
+            Layout.alignment: Qt.AlignHCenter
+            from: 0
+            to: 90
+            stepSize: 5
+            value: vehicleState.localSpeedLimit
+            onValueChanged: vehicleState.localSpeedLimit = value
+        }
+
         Text { text: "Fuel Eco Current"; color: "white" }
         Slider { Layout.alignment: Qt.AlignCenter; from: 0; to: 30; value: vehicleState.fuelEconomyLive; onValueChanged: vehicleState.fuelEconomyLive = value }
         Text { text: "Fuel Eco Current"; color: "white" }
@@ -151,6 +166,11 @@ ApplicationWindow {
         }
         Button {
             Layout.fillWidth: true
+            text: "Seatbelt"
+            onClicked: vehicleState.seatbeltWarningActive = !vehicleState.seatbeltWarningActive
+        }
+        Button {
+            Layout.fillWidth: true
             text: "Check Engine"
             onClicked: vehicleState.checkEngineCautionActive = !vehicleState.checkEngineCautionActive
         }
@@ -163,6 +183,23 @@ ApplicationWindow {
             Layout.fillWidth: true
             text: "Tire Pressure"
             onClicked: vehicleState.tirePressCautionActive = !vehicleState.tirePressCautionActive
+        }
+        Text { Layout.columnSpan: 2; text: "Fuel & Temp"; color: "white" }
+
+        Text { text: "Fuel Gallons"; color: "white" }
+        Slider {
+            Layout.alignment: Qt.AlignCenter
+            from: 0; to: 16.5; stepSize: 0.1
+            value: vehicleState.fuelGallonsRemaining
+            onValueChanged: vehicleState.fuelGallonsRemaining = value
+        }
+
+        Text { text: "Eng Temp °F"; color: "white" }
+        Slider {
+            Layout.alignment: Qt.AlignCenter
+            from: 100; to: 260
+            value: vehicleState.engineTemp
+            onValueChanged: vehicleState.engineTemp = value
         }
     }
 }

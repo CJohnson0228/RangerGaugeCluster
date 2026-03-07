@@ -39,6 +39,7 @@ class ThemeService : public QObject
     Q_PROPERTY(QColor darkGradientOuter READ darkGradientOuter CONSTANT)
     Q_PROPERTY(QColor darkBorder READ darkBorder CONSTANT)
     Q_PROPERTY(QColor darkTextMuted READ darkTextMuted CONSTANT)
+    Q_PROPERTY(QColor darkMuted READ darkMuted CONSTANT)
     Q_PROPERTY(QColor darkAccent READ darkAccent CONSTANT)
     Q_PROPERTY(QColor darkPrimary READ darkPrimary CONSTANT)
 
@@ -91,6 +92,7 @@ public:
     QColor darkGradientOuter() const { return QColor("#191818"); }
     QColor darkBorder() const { return QColor("#333333"); }
     QColor darkTextMuted() const { return QColor("#ababab"); }
+    QColor darkMuted() const { return QColor("#343434"); }
     QColor darkAccent() const { return QColor("#ffd911"); }
     QColor darkPrimary() const { return QColor("#ff9d11"); }
 
