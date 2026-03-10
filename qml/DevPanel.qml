@@ -7,7 +7,7 @@ ApplicationWindow {
     id: root
     visible: true
     width: 400
-    height: 900
+    height: 1200
     title: "Dev Panel"
 
     Timer {
@@ -24,182 +24,173 @@ ApplicationWindow {
         onTriggered: vehicleState.rightTurnActive = !vehicleState.rightTurnActive
     }
 
-    GridLayout {
+    ScrollView {
         anchors.fill: parent
-        columns: 2
-        columnSpacing: 2
 
-        Button {
-            Layout.fillWidth: true
-            text: "Left Turn"
-            onClicked: {
-                if (leftBlinkTimer.running) {
-                    leftBlinkTimer.stop()
-                    vehicleState.leftTurnActive = false
-                } else {
-                    leftBlinkTimer.start()
+        GridLayout {
+            width: 400
+            columns: 2
+            columnSpacing: 2
+            rowSpacing: 4
+
+            // Turn Signals
+            Button {
+                Layout.fillWidth: true
+                text: "Left Turn"
+                onClicked: {
+                    if (leftBlinkTimer.running) {
+                        leftBlinkTimer.stop()
+                        vehicleState.leftTurnActive = false
+                    } else {
+                        leftBlinkTimer.start()
+                    }
                 }
             }
-        }
-
-        Button {
-            Layout.fillWidth: true
-            text: "Right Turn"
-            onClicked: {
-                if (rightBlinkTimer.running) {
-                    rightBlinkTimer.stop()
-                    vehicleState.rightTurnActive = false
-                } else {
-                    rightBlinkTimer.start()
+            Button {
+                Layout.fillWidth: true
+                text: "Right Turn"
+                onClicked: {
+                    if (rightBlinkTimer.running) {
+                        rightBlinkTimer.stop()
+                        vehicleState.rightTurnActive = false
+                    } else {
+                        rightBlinkTimer.start()
+                    }
                 }
             }
-        }
-
-        Button {
-            Layout.columnSpan: 2
-            Layout.fillWidth: true
-            text: "Hazards"
-            onClicked: {
-                if (leftBlinkTimer.running || rightBlinkTimer.running) {
-                    leftBlinkTimer.stop()
-                    rightBlinkTimer.stop()
-                    vehicleState.leftTurnActive = false
-                    vehicleState.rightTurnActive = false
-                } else {
-                    leftBlinkTimer.start()
-                    rightBlinkTimer.start()
+            Button {
+                Layout.columnSpan: 2
+                Layout.fillWidth: true
+                text: "Hazards"
+                onClicked: {
+                    if (leftBlinkTimer.running || rightBlinkTimer.running) {
+                        leftBlinkTimer.stop()
+                        rightBlinkTimer.stop()
+                        vehicleState.leftTurnActive = false
+                        vehicleState.rightTurnActive = false
+                    } else {
+                        leftBlinkTimer.start()
+                        rightBlinkTimer.start()
+                    }
                 }
             }
-        }
 
-        Text {
-            Layout.columnSpan: 2
-            Layout.fillWidth: true
-            text: "Gauge Sliders"
-            color: "white"
-        }
+            // Section header
+            Text { Layout.columnSpan: 2; text: "── Vehicle Data (raw metric) ──"; color: "white"; font.pixelSize: 11 }
 
-        Slider {
-            Layout.alignment: Qt.AlignCenter
-            from: 0; to: 120
-            value: vehicleState.vehicleSpeed
-            onValueChanged: vehicleState.vehicleSpeed = value
-        }
+            // Speed — km/h raw
+            Text { text: "Speed (km/h)"; color: "white" }
+            Slider {
+                Layout.fillWidth: true
+                from: 0; to: 200
+                value: vehicleState.vehicleSpeed
+                onValueChanged: vehicleState.vehicleSpeed = value
+            }
 
-        Slider {
-            Layout.alignment: Qt.AlignCenter
-            from: 0; to: 7000
-            value: vehicleState.engineRPM
-            onValueChanged: vehicleState.engineRPM = value
-        }
+            // RPM
+            Text { text: "RPM"; color: "white" }
+            Slider {
+                Layout.fillWidth: true
+                from: 0; to: 7000
+                value: vehicleState.engineRPM
+                onValueChanged: vehicleState.engineRPM = value
+            }
 
-        Text {
-            Layout.columnSpan: 2
-            Layout.fillWidth: true
-            text: "Tire Pressures"
-            color: "white"
-        }
+            // Engine temp — °C raw
+            Text { text: "Engine Temp (°C)"; color: "white" }
+            Slider {
+                Layout.fillWidth: true
+                from: 40; to: 120
+                value: vehicleState.engineTemp
+                onValueChanged: vehicleState.engineTemp = value
+            }
 
-        Slider { Layout.alignment: Qt.AlignCenter; from: 0; to: 50; value: vehicleState.tirePressLF; onValueChanged: vehicleState.tirePressLF = value }
-        Slider { Layout.alignment: Qt.AlignCenter; from: 0; to: 50; value: vehicleState.tirePressRF; onValueChanged: vehicleState.tirePressRF = value }
-        Slider { Layout.alignment: Qt.AlignCenter; from: 0; to: 50; value: vehicleState.tirePressLR; onValueChanged: vehicleState.tirePressLR = value }
-        Slider { Layout.alignment: Qt.AlignCenter; from: 0; to: 50; value: vehicleState.tirePressRR; onValueChanged: vehicleState.tirePressRR = value }
+            // Fuel level — normalized 0.0–1.0
+            Text { text: "Fuel Level (0–1)"; color: "white" }
+            Slider {
+                Layout.fillWidth: true
+                from: 0; to: 1.0; stepSize: 0.01
+                value: vehicleState.fuelLevel
+                onValueChanged: vehicleState.fuelLevel = value
+            }
 
-        Button {
-            Layout.fillWidth: true
-            Layout.columnSpan: 2
-            text: "Next General View"
-            onClicked: vehicleState.activeDataIndex = (vehicleState.activeDataIndex + 1) % 3
-        }
+            // Fuel economy — stored as mpg (0 = engine idle/stopped)
+            Text { text: "Fuel Eco Live (mpg)"; color: "white" }
+            Slider {
+                Layout.fillWidth: true
+                from: 0; to: 30; stepSize: 0.1
+                value: vehicleState.fuelEconomyLive
+                onValueChanged: vehicleState.fuelEconomyLive = value
+            }
+            Text { text: "Fuel Eco Avg (mpg)"; color: "white" }
+            Slider {
+                Layout.fillWidth: true
+                from: 0; to: 30; stepSize: 0.1
+                value: vehicleState.fuelEconomyAverage
+                onValueChanged: vehicleState.fuelEconomyAverage = value
+            }
 
-        Button {
-            Layout.fillWidth: true
-            Layout.columnSpan: 2
-            text: "Toggle themeService"
-            onClicked: themeService.darkMode = !themeService.darkMode
-        }
+            // Section header
+            Text { Layout.columnSpan: 2; text: "── Location Data (raw metric) ──"; color: "white"; font.pixelSize: 11 }
 
-        Text {
-            Layout.columnSpan: 2
-            text: "Speed Limit"
-            color: "white"
-        }
-        SpinBox {
-            Layout.columnSpan: 2
-            Layout.alignment: Qt.AlignHCenter
-            from: 0
-            to: 90
-            stepSize: 5
-            value: vehicleState.localSpeedLimit
-            onValueChanged: vehicleState.localSpeedLimit = value
-        }
+            // Speed limit — km/h raw
+            Text { text: "Speed Limit (km/h)"; color: "white" }
+            SpinBox {
+                from: 0; to: 130; stepSize: 10
+                value: Math.round(locationService.localSpeedLimit)
+                onValueModified: locationService.localSpeedLimit = value
+            }
 
-        Text { text: "Fuel Eco Current"; color: "white" }
-        Slider { Layout.alignment: Qt.AlignCenter; from: 0; to: 30; value: vehicleState.fuelEconomyLive; onValueChanged: vehicleState.fuelEconomyLive = value }
-        Text { text: "Fuel Eco Current"; color: "white" }
-        Slider { Layout.alignment: Qt.AlignCenter; from: 0; to: 30; value: vehicleState.fuelEconomyAverage; onValueChanged: vehicleState.fuelEconomyAverage = value }
+            // Section header
+            Text { Layout.columnSpan: 2; text: "── Tire Pressures (kPa) ──"; color: "white"; font.pixelSize: 11 }
 
-        Button {
-            Layout.fillWidth: true
-            text: "Battery Warning"
-            onClicked: vehicleState.batteryWarningActive = !vehicleState.batteryWarningActive
-        }
-        Button {
-            Layout.fillWidth: true
-            text: "Brake Warning"
-            onClicked: vehicleState.brakeWarningActive = !vehicleState.brakeWarningActive
-        }
-        Button {
-            Layout.fillWidth: true
-            text: "Coolant Temp"
-            onClicked: vehicleState.coolantTempWarningActive = !vehicleState.coolantTempWarningActive
-        }
-        Button {
-            Layout.fillWidth: true
-            text: "Parking Brake"
-            onClicked: vehicleState.parkingBrakeWarningActive = !vehicleState.parkingBrakeWarningActive
-        }
-        Button {
-            Layout.fillWidth: true
-            text: "Oil Warning"
-            onClicked: vehicleState.oilWarningActive = !vehicleState.oilWarningActive
-        }
-        Button {
-            Layout.fillWidth: true
-            text: "Seatbelt"
-            onClicked: vehicleState.seatbeltWarningActive = !vehicleState.seatbeltWarningActive
-        }
-        Button {
-            Layout.fillWidth: true
-            text: "Check Engine"
-            onClicked: vehicleState.checkEngineCautionActive = !vehicleState.checkEngineCautionActive
-        }
-        Button {
-            Layout.fillWidth: true
-            text: "Low Fuel"
-            onClicked: vehicleState.lowFuelCautionActive = !vehicleState.lowFuelCautionActive
-        }
-        Button {
-            Layout.fillWidth: true
-            text: "Tire Pressure"
-            onClicked: vehicleState.tirePressCautionActive = !vehicleState.tirePressCautionActive
-        }
-        Text { Layout.columnSpan: 2; text: "Fuel & Temp"; color: "white" }
+            Text { text: "Front Left"; color: "white" }
+            Slider { Layout.fillWidth: true; from: 0; to: 400; value: vehicleState.tirePressLF; onValueChanged: vehicleState.tirePressLF = value }
+            Text { text: "Front Right"; color: "white" }
+            Slider { Layout.fillWidth: true; from: 0; to: 400; value: vehicleState.tirePressRF; onValueChanged: vehicleState.tirePressRF = value }
+            Text { text: "Rear Left"; color: "white" }
+            Slider { Layout.fillWidth: true; from: 0; to: 400; value: vehicleState.tirePressLR; onValueChanged: vehicleState.tirePressLR = value }
+            Text { text: "Rear Right"; color: "white" }
+            Slider { Layout.fillWidth: true; from: 0; to: 400; value: vehicleState.tirePressRR; onValueChanged: vehicleState.tirePressRR = value }
 
-        Text { text: "Fuel Gallons"; color: "white" }
-        Slider {
-            Layout.alignment: Qt.AlignCenter
-            from: 0; to: 16.5; stepSize: 0.1
-            value: vehicleState.fuelGallonsRemaining
-            onValueChanged: vehicleState.fuelGallonsRemaining = value
-        }
+            // Section header
+            Text { Layout.columnSpan: 2; text: "── Warning Indicators ──"; color: "white"; font.pixelSize: 11 }
 
-        Text { text: "Eng Temp °F"; color: "white" }
-        Slider {
-            Layout.alignment: Qt.AlignCenter
-            from: 100; to: 260
-            value: vehicleState.engineTemp
-            onValueChanged: vehicleState.engineTemp = value
+            Button { Layout.fillWidth: true; text: "Battery";       onClicked: vehicleState.batteryWarningActive = !vehicleState.batteryWarningActive }
+            Button { Layout.fillWidth: true; text: "Brake";         onClicked: vehicleState.brakeWarningActive = !vehicleState.brakeWarningActive }
+            Button { Layout.fillWidth: true; text: "Coolant Temp";  onClicked: vehicleState.coolantTempWarningActive = !vehicleState.coolantTempWarningActive }
+            Button { Layout.fillWidth: true; text: "Parking Brake"; onClicked: vehicleState.parkingBrakeWarningActive = !vehicleState.parkingBrakeWarningActive }
+            Button { Layout.fillWidth: true; text: "Oil";           onClicked: vehicleState.oilWarningActive = !vehicleState.oilWarningActive }
+            Button { Layout.fillWidth: true; text: "Seatbelt";      onClicked: vehicleState.seatbeltWarningActive = !vehicleState.seatbeltWarningActive }
+            Button { Layout.fillWidth: true; text: "Check Engine";  onClicked: vehicleState.checkEngineCautionActive = !vehicleState.checkEngineCautionActive }
+            Button { Layout.fillWidth: true; text: "Low Fuel";      onClicked: vehicleState.lowFuelCautionActive = !vehicleState.lowFuelCautionActive }
+            Button { Layout.fillWidth: true; text: "Tire Pressure"; onClicked: vehicleState.tirePressCautionActive = !vehicleState.tirePressCautionActive }
+
+            // Section header
+            Text { Layout.columnSpan: 2; text: "── Info Indicators ──"; color: "white"; font.pixelSize: 11 }
+
+            Button { Layout.fillWidth: true; text: "Cruise Control"; onClicked: vehicleState.cruiseControlActive = !vehicleState.cruiseControlActive }
+            Button { Layout.fillWidth: true; text: "Hi-Beams";       onClicked: vehicleState.hiBeamsActive = !vehicleState.hiBeamsActive }
+            Button { Layout.columnSpan: 2; Layout.fillWidth: true; text: "Lo-Beams"; onClicked: vehicleState.loBeamsActive = !vehicleState.loBeamsActive }
+
+            // Section header
+            Text { Layout.columnSpan: 2; text: "── UI Controls ──"; color: "white"; font.pixelSize: 11 }
+
+            Button {
+                Layout.columnSpan: 2; Layout.fillWidth: true
+                text: "Next Data View"
+                onClicked: vehicleState.activeDataIndex = (vehicleState.activeDataIndex + 1) % 3
+            }
+            Button {
+                Layout.columnSpan: 2; Layout.fillWidth: true
+                text: "Toggle Theme"
+                onClicked: themeService.darkMode = !themeService.darkMode
+            }
+            Button {
+                Layout.columnSpan: 2; Layout.fillWidth: true
+                text: "Toggle Units (Metric/Imperial)"
+                onClicked: settingsService.metricUnits = !settingsService.metricUnits
+            }
         }
     }
 }

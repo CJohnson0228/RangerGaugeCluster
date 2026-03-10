@@ -82,7 +82,6 @@ ApplicationWindow {
 
                     Speedo {
                         id: speedo
-                        value: vehicleState.vehicleSpeed
                         Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
                         Layout.leftMargin: 8
                     }

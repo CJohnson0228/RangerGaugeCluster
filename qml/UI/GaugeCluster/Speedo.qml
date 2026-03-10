@@ -11,17 +11,18 @@ Item {
 
     // Configuration
     property real minValue: 0
-    property real maxValue: 120
-    property real value: vehicleState.vehicleSpeed
+    property real maxValue: unitsService.speedMaxValue
+    property real value: unitsService.displaySpeed
     Behavior on value { NumberAnimation { duration: 200; easing.type: Easing.OutCubic }}
 
     property real startAngle: 150
     property real endAngle: 390
     property real sweepAngle: endAngle - startAngle
 
-    property string unit: "MPH"
+    property string unit: unitsService.speedUnit
     property string label: ""
     property int decimals: 0
+    property bool speeding: unitsService.displaySpeed > unitsService.displaySpeedLimit
 
     property real arcWidth: 12
     property color arcBackgroundColor: themeService.card
@@ -30,7 +31,6 @@ Item {
     property color needleColor: themeService.foreground
     property color textColor: themeService.foreground
     property color labelColor: themeService.foreground
-    property bool speeding: vehicleState.vehicleSpeed > vehicleState.localSpeedLimit
 
     readonly property real centerX: width / 2
     readonly property real centerY: height / 2
@@ -94,7 +94,7 @@ Item {
                 Text {
                     width: 55
                     horizontalAlignment: Text.AlignHCenter
-                    text: vehicleState.localSpeedLimit
+                    text: Math.round(unitsService.displaySpeedLimit)
                     color: speeding ? themeService.error : "#000000"
                     font.family: themeService.fontOxanium
                     font.pixelSize: 28
@@ -122,26 +122,6 @@ Item {
             }
         }
 
-        // Redline
-        Shape {
-            anchors.fill: parent
-            ShapePath {
-                fillColor: "transparent"
-                strokeColor: themeService.error
-                strokeWidth: root.arcWidth
-                capStyle: ShapePath.FlatCap
-                PathAngleArc {
-                    centerX: root.centerX
-                    centerY: root.centerY
-                    radiusX: root.radius
-                    radiusY: root.radius
-                    startAngle: root.startAngle + (100 - root.minValue) / (root.maxValue - root.minValue) * root.sweepAngle
-                    sweepAngle: (20 / (root.maxValue - root.minValue)) * root.sweepAngle
-                }
-                Behavior on strokeColor { ColorAnimation { duration: themeService.toggleTimer }}
-            }
-        }
-
         // Arc Value Fill
         Shape {
             anchors.fill: parent
@@ -164,9 +144,10 @@ Item {
 
         // Tick Marks
         Repeater {
-            model: 25
+            model: (unitsService.speedMaxValue / unitsService.speedTickStep) + 1
             Rectangle {
-                property real tickAngle: root.startAngle + index * (root.sweepAngle / 24)
+                property real tickCount: unitsService.speedMaxValue / unitsService.speedTickStep
+                property real tickAngle: root.startAngle + index * (root.sweepAngle / tickCount)
                 property real tickRad: tickAngle * Math.PI / 180
                 property bool isLabeled: index % 4 === 0
                 property bool isMajor: index % 2 === 0
@@ -187,9 +168,10 @@ Item {
 
         // Tick Labels
         Repeater {
-            model: 25
+            model: (unitsService.speedMaxValue / unitsService.speedTickStep) + 1
             Text {
-                property real tickAngle: root.startAngle + index * (root.sweepAngle / 24)
+                property real tickCount: unitsService.speedMaxValue / unitsService.speedTickStep
+                property real tickAngle: root.startAngle + index * (root.sweepAngle / tickCount)
                 property real tickRad: tickAngle * Math.PI / 180
                 property bool isLabeled: index % 4 === 0
                 property real labelRadius: root.radius - root.arcWidth / 2 - 22
@@ -197,7 +179,7 @@ Item {
                 visible: isLabeled
                 x: root.centerX + Math.cos(tickRad) * labelRadius - width / 2
                 y: root.centerY + Math.sin(tickRad) * labelRadius - height / 2
-                text: (root.minValue + index * 5).toString()
+                text: (index * unitsService.speedTickStep).toString()
                 font.pixelSize: 14
                 color: root.textColor
                 horizontalAlignment: Text.AlignHCenter

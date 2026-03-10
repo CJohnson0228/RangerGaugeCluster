@@ -5,8 +5,8 @@ import HMItestUI
 
 Text {
     id: root
-    property int tirePress
-    text: tirePress
+    property real tirePress
+    text: tirePress.toFixed(1)
     font.family: themeService.fontOxanium
     font.pixelSize: 24
     color: themeService.foreground
@@ -18,7 +18,7 @@ Text {
         anchors.centerIn: parent
         width: 50
         height: 50
-        visible: tirePress < 30
+        visible: tirePress < unitsService.tirePressLowThreshold
         z: -1
 
         ShapePath {
@@ -39,7 +39,7 @@ Text {
         }
 
         SequentialAnimation on opacity {
-            running: tirePress < 30
+            running: tirePress < unitsService.tirePressLowThreshold
             loops: Animation.Infinite
             NumberAnimation { to: 1.0; duration: 600; easing.type: Easing.InOutSine }
             NumberAnimation { to: 0.0; duration: 600; easing.type: Easing.InOutSine }
@@ -51,7 +51,7 @@ Text {
         anchors.centerIn: parent
         width: 50
         height: 50
-        visible: tirePress > 40
+        visible: tirePress > unitsService.tirePressHighThreshold
         z: -1
 
         ShapePath {
@@ -72,7 +72,7 @@ Text {
         }
 
         SequentialAnimation on opacity {
-            running: tirePress > 40
+            running: tirePress > unitsService.tirePressHighThreshold
             loops: Animation.Infinite
             NumberAnimation { to: 1.0; duration: 600; easing.type: Easing.InOutSine }
             NumberAnimation { to: 0.0; duration: 600; easing.type: Easing.InOutSine }

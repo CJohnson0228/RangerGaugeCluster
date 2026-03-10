@@ -8,9 +8,13 @@ Item {
     height: 35
 
     property bool active: false
-    property bool warning: false
+    property string indicatorType: "caution"  // "warning" | "caution" | "info"
     property string iconSource: ""
-    property color iconColor: active ? warning ? themeService.error : themeService.accent : themeService.darkBackground
+    property color iconColor: active
+        ? (indicatorType === "warning" ? themeService.error
+         : indicatorType === "info"    ? themeService.success
+         :                               themeService.accent)
+        : themeService.darkBackground
 
 
     Image {

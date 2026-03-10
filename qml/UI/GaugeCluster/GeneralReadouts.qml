@@ -54,7 +54,7 @@ RowLayout {
                         x: (index / 8) * fuelGauge.width - width / 2
                         anchors.bottom: parent.bottom
                         anchors.bottomMargin: 10
-                        color: isMajor ? themeService.darkTextMuted : themeService.darkMuted
+                        color: themeService.darkTextMuted
                     }
                 }
             }
@@ -73,7 +73,7 @@ RowLayout {
             }
             Text {
                 Layout.alignment: Qt.AlignHCenter
-                text: vehicleState.fuelRangeLeft.toFixed(1) + " mi"
+                text: unitsService.displayFuelRange.toFixed(1) + " " + unitsService.distanceUnit
                 font.family: themeService.fontOxanium
                 font.pixelSize: 16
                 color: themeService.darkForeground
@@ -97,7 +97,7 @@ RowLayout {
 
         Text {
             Layout.alignment: Qt.AlignHCenter
-            text: vehicleState.odometer.toLocaleString(Qt.locale(), 'f', 0)
+            text: unitsService.displayOdometer.toLocaleString(Qt.locale(), 'f', 0) + " " + unitsService.distanceUnit
             font.family: themeService.fontOxanium
             font.pixelSize: 20
             color: themeService.darkForeground
@@ -121,7 +121,7 @@ RowLayout {
             }
             Text {
                 Layout.alignment: Qt.AlignHCenter
-                text: vehicleState.engineTemp.toFixed(1) + "°F"
+                text: unitsService.displayEngineTemp.toFixed(1) + " " + unitsService.tempUnit
                 font.family: themeService.fontOxanium
                 font.pixelSize: 16
                 color: themeService.darkForeground
@@ -153,12 +153,19 @@ RowLayout {
 
                     Rectangle {
                         id: tempBar
-                        property real level: vehicleState.engineTempLevel
-                        width: parent.width * level
+                        // Normalize raw °C against the operating range (70–110°C)
+                        // Bar is hidden below 75°C — engine not yet up to temp
+                        property real rawTemp: vehicleState.engineTemp
+                        property real level: Math.max(0.0, Math.min(1.0, (rawTemp - 70.0) / (110.0 - 70.0)))
+                        property bool atTemp: rawTemp >= 75.0
+
+                        width: atTemp ? parent.width * level : 0
                         height: parent.height
-                        color: Qt.hsla(((1.0 - level) * 0.33), 0.85, 0.45, 1.0)
+                        color: Qt.hsla((1.0 - level) * 0.33, 0.85, 0.45, 1.0)
+                        opacity: atTemp ? 1.0 : 0.0
                         Behavior on width { NumberAnimation { duration: 500; easing.type: Easing.OutCubic }}
                         Behavior on color { ColorAnimation { duration: 500 }}
+                        Behavior on opacity { NumberAnimation { duration: 1000 }}
                     }
                 }
 
@@ -172,7 +179,7 @@ RowLayout {
                         x: (index / 8) * tempGauge.width - width / 2
                         anchors.bottom: parent.bottom
                         anchors.bottomMargin: 10
-                        color: isMajor ? themeService.darkTextMuted : themeService.darkMuted
+                        color: themeService.darkTextMuted
                     }
                 }
             }

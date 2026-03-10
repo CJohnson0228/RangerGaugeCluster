@@ -25,3 +25,5 @@ ui_*
 # User specific
 *.user
 *.user.*
+
+CLAUDE.md

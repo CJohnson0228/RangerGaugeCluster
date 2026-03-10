@@ -5,6 +5,10 @@
 #include <QFontDatabase>
 #include "VehicleState.h"
 #include "ThemeService.h"
+#include "LocationService.h"
+#include "MediaService.h"
+#include "SettingsService.h"
+#include "UnitsService.h"
 
 int main(int argc, char *argv[])
 {
@@ -14,6 +18,11 @@ int main(int argc, char *argv[])
     // Load fonts and register names into ThemeService
     ThemeService themeService;
     VehicleState vehicleState;
+    LocationService locationService;
+    MediaService mediaService;
+    SettingsService settingsService;
+    UnitsService unitsService;
+    unitsService.setDependencies(&vehicleState, &locationService, &settingsService);
 
     auto loadFont = [](const QString& path) -> QString {
         int id = QFontDatabase::addApplicationFont(path);
@@ -35,6 +44,27 @@ int main(int argc, char *argv[])
     auto setupEngine = [&](QQmlApplicationEngine& engine) {
         engine.rootContext()->setContextProperty("vehicleState", &vehicleState);
         engine.rootContext()->setContextProperty("themeService", &themeService);
+        engine.rootContext()->setContextProperty("locationService", &locationService);
+        engine.rootContext()->setContextProperty("mediaService", &mediaService);
+        engine.rootContext()->setContextProperty("settingsService", &settingsService);
+        engine.rootContext()->setContextProperty("unitsService", &unitsService);
+        // Wire themeBehavior changes to ThemeService
+        QObject::connect(&settingsService, &SettingsService::themeBehaviorChanged,
+            [&themeService, &settingsService, &locationService]() {
+                const QString behavior = settingsService.themeBehavior();
+                if (behavior == "dark")       themeService.setDarkMode(true);
+                else if (behavior == "light") themeService.setDarkMode(false);
+                // "auto" is handled by sunrise/sunset — LocationService will drive it later
+            });
+
+        // Wire sunrise/sunset to ThemeService when behavior is "auto"
+        QObject::connect(&locationService, &LocationService::sunriseTimeChanged,
+            [&themeService, &settingsService]() {
+                if (settingsService.themeBehavior() == "auto") {
+                    // placeholder — real time comparison comes with LocationService backend
+                }
+            });
+
         QObject::connect(
             &engine,
             &QQmlApplicationEngine::objectCreationFailed,

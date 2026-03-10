@@ -4,6 +4,7 @@ project(HMItest VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt6 COMPONENTS
+        Core
         Quick
         Quick3D
         QuickControls2
@@ -21,6 +22,14 @@ qt_add_executable(HMItest
         src/VehicleState.cpp
         src/ThemeService.h
         src/ThemeService.cpp
+        src/LocationService.cpp
+        src/LocationService.h
+        src/SettingsService.cpp
+        src/SettingsService.h
+        src/MediaService.cpp
+        src/MediaService.h
+        src/UnitsService.cpp
+        src/UnitsService.h
 )
 
 
@@ -38,6 +47,7 @@ qt_add_qml_module(HMItest
         qml/UI/GaugeCluster/Speedo.qml
         qml/UI/GaugeCluster/Media.qml
         qml/UI/GaugeCluster/Settings.qml
+        qml/UI/GaugeCluster/SettingsRow.qml
         qml/UI/GaugeCluster/Tach.qml
         qml/UI/GaugeCluster/TirePressReading.qml
         qml/UI/GaugeCluster/TurnSignal.qml
@@ -87,6 +97,7 @@ set_target_properties(HMItest PROPERTIES
 
 target_link_libraries(HMItest
         PRIVATE
+        Qt6::Core
         Qt6::Quick
         Qt6::Quick3D
         Qt6::QuickControls2

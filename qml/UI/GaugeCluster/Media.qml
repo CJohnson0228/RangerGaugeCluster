@@ -16,7 +16,7 @@ ColumnLayout {
         visible: false
         width: 200
         height: 200
-        source: themeService.imagePath + vehicleState.mediaSourceImage
+        source: themeService.imagePath + mediaService.sourceImage
         fillMode: Image.PreserveAspectCrop
     }
 
@@ -50,7 +50,7 @@ ColumnLayout {
 
             Text {
                 Layout.alignment: Qt.AlignHCenter
-                text: vehicleState.mediaSongName
+                text: mediaService.trackName
                 color: themeService.foreground
                 font.pixelSize: 24
                 font.family: themeService.fontQuicksand
@@ -58,7 +58,7 @@ ColumnLayout {
 
             Text {
                 Layout.alignment: Qt.AlignHCenter
-                text: vehicleState.mediaBandName
+                text: mediaService.artistName
                 color: themeService.textMuted
                 font.pixelSize: 18
                 font.family: themeService.fontQuicksand

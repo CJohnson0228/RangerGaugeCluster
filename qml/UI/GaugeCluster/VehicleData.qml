@@ -28,7 +28,7 @@ RowLayout {
 
         Text {
             Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
-            text: "PSI"
+            text: unitsService.tirePressUnit
             color: themeService.textMuted
             Behavior on color { ColorAnimation { duration: themeService.toggleTimer }}
         }
@@ -48,8 +48,7 @@ RowLayout {
                     anchors.top: parent.top
                     anchors.topMargin: 60
                     anchors.horizontalCenter: parent.horizontalCenter
-
-                    tirePress: vehicleState.tirePressLF
+                    tirePress: unitsService.displayTirePressLF
                 }
 
                 TirePressReading {
@@ -57,7 +56,7 @@ RowLayout {
                     anchors.bottom: parent.bottom
                     anchors.bottomMargin: 60
                     anchors.horizontalCenter: parent.horizontalCenter
-                    tirePress: vehicleState.tirePressLR
+                    tirePress: unitsService.displayTirePressLR
                 }
             }
 
@@ -86,8 +85,7 @@ RowLayout {
                     anchors.top: parent.top
                     anchors.topMargin: 60
                     anchors.horizontalCenter: parent.horizontalCenter
-
-                    tirePress: vehicleState.tirePressRF
+                    tirePress: unitsService.displayTirePressRF
                 }
 
                 TirePressReading {
@@ -95,8 +93,7 @@ RowLayout {
                     anchors.bottom: parent.bottom
                     anchors.bottomMargin: 60
                     anchors.horizontalCenter: parent.horizontalCenter
-
-                    tirePress: vehicleState.tirePressRR
+                    tirePress: unitsService.displayTirePressRR
                 }
             }
         }
@@ -114,7 +111,7 @@ RowLayout {
 
             Text {
                 anchors.right: parent.right
-                text: vehicleState.fuelEconomyAverage.toFixed(2) + " (MPG)"
+                text: unitsService.displayFuelEconomyAverage.toFixed(2) + " " + unitsService.fuelEconomyUnit
                 color: themeService.foreground
                 Behavior on color { ColorAnimation { duration: themeService.toggleTimer }}
             }
@@ -134,14 +131,21 @@ RowLayout {
             Behavior on color { ColorAnimation { duration: themeService.toggleTimer }}
         }
 
+        Text {
+            Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
+            text: unitsService.fuelEconomyUnit
+            color: themeService.textMuted
+            font.pixelSize: 10
+            Behavior on color { ColorAnimation { duration: themeService.toggleTimer }}
+        }
+
         Item {
             Layout.fillHeight: true
-            Layout.topMargin: 20
-            Layout.bottomMargin: 60
+            Layout.topMargin: 10
+            Layout.bottomMargin: 10
             Layout.preferredWidth: 60
             Layout.alignment: Qt.AlignHCenter
 
-            // Bar
             Rectangle {
                 id: bar
                 anchors.right: parent.horizontalCenter
@@ -157,44 +161,40 @@ RowLayout {
                 Rectangle {
                     anchors.bottom: parent.bottom
                     width: parent.width
-                    height: parent.height * (vehicleState.fuelEconomyLive / 30)
+                    height: parent.height * unitsService.fuelEconomyEfficiency
                     color: themeService.primary
+                    Behavior on height { NumberAnimation { duration: 300; easing.type: Easing.OutCubic }}
                 }
             }
 
-            // Tick marks and labels
             Repeater {
-                model: [
-                    { value: 0,  major: true  },
-                    { value: 5,  major: false },
-                    { value: 10, major: true  },
-                    { value: 15, major: false },
-                    { value: 20, major: true  },
-                    { value: 25, major: false },
-                    { value: 30, major: true  }
-                ]
-
+                model: [0, 0.333, 0.667, 1.0]
                 Item {
                     required property var modelData
+                    // Bar is always linear in MPG (0–30). Tick position = modelData * 30 mpg.
+                    // Imperial: show the MPG value directly.
+                    // Metric: convert the MPG position to its L/100km equivalent.
+                    //         Bottom tick (0 mpg) = stopped, shown as "--".
+                    property string tickLabel: settingsService.metricUnits
+                        ? (modelData > 0 ? Math.round(235.214 / (modelData * 30.0)).toString() : "--")
+                        : Math.round(modelData * 30.0).toString()
                     x: bar.x + bar.width
-                    y: bar.height - (bar.height * (modelData.value / 30)) + bar.y
-                    width: modelData.major ? 10 : 6
+                    y: bar.height - (bar.height * modelData) + bar.y
+                    width: 10
                     height: 1
 
                     Rectangle {
                         width: parent.width
                         height: 1
                         color: themeService.muted
-                        opacity: modelData.major ? 1.0 : 0.5
                         Behavior on color { ColorAnimation { duration: themeService.toggleTimer }}
                     }
 
                     Text {
-                        visible: modelData.major
                         anchors.left: parent.right
                         anchors.leftMargin: 3
                         anchors.verticalCenter: parent.verticalCenter
-                        text: modelData.value
+                        text: parent.tickLabel
                         font.family: themeService.fontOxanium
                         font.pixelSize: 10
                         color: themeService.foreground
@@ -202,6 +202,18 @@ RowLayout {
                     }
                 }
             }
+        }
+
+        Text {
+            Layout.alignment: Qt.AlignHCenter
+            Layout.bottomMargin: 4
+            text: vehicleState.fuelEconomyLive <= 0
+                ? "--"
+                : unitsService.displayFuelEconomyLive.toFixed(1) + " " + unitsService.fuelEconomyUnit
+            font.family: themeService.fontOxanium
+            font.pixelSize: 14
+            color: themeService.foreground
+            Behavior on color { ColorAnimation { duration: themeService.toggleTimer }}
         }
     }
 }

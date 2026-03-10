@@ -6,58 +6,76 @@ RowLayout {
     anchors.centerIn: parent
     spacing: 20
 
-    // Battery Warning (warning)
+    // Battery Warning
     WarningIndicator {
         active: vehicleState.batteryWarningActive
-        warning: true
+        indicatorType: "warning"
         iconSource: "batterywarning.svg"
     }
-    // Brake Warning (warning)
+    // Brake Warning
     WarningIndicator {
         active: vehicleState.brakeWarningActive
-        warning: true
+        indicatorType: "warning"
         iconSource: "brakewarning.svg"
     }
-    // Coolant Temp Warning (warning)
+    // Coolant Temp Warning
     WarningIndicator {
         active: vehicleState.coolantTempWarningActive
-        warning: true
+        indicatorType: "warning"
         iconSource: "coolanttempwarning.svg"
     }
-    // Parking Brake (warning)
+    // Parking Brake Warning
     WarningIndicator {
         active: vehicleState.parkingBrakeWarningActive
-        warning: true
+        indicatorType: "warning"
         iconSource: "parkwarning.svg"
     }
-    // Oil Warning (warning)
+    // Oil Warning
     WarningIndicator {
         active: vehicleState.oilWarningActive
-        warning: true
+        indicatorType: "warning"
         iconSource: "oilwarning.svg"
     }
-    // Seatbelt Warning (warning)
+    // Seatbelt Warning
     WarningIndicator {
         active: vehicleState.seatbeltWarningActive
-        warning: true
+        indicatorType: "warning"
         iconSource: "seatbeltwarning.svg"
     }
     // Check Engine (caution)
     WarningIndicator {
         active: vehicleState.checkEngineCautionActive
-        warning: false
+        indicatorType: "caution"
         iconSource: "checkengine.svg"
     }
     // Low Fuel (caution)
     WarningIndicator {
         active: vehicleState.lowFuelCautionActive
-        warning: false
+        indicatorType: "caution"
         iconSource: "fuellow.svg"
     }
     // Tire Pressure (caution)
     WarningIndicator {
         active: vehicleState.tirePressCautionActive
-        warning: false
+        indicatorType: "caution"
         iconSource: "tirepresswarning.svg"
+    }
+    // Cruise Control (info)
+    WarningIndicator {
+        active: vehicleState.cruiseControlActive
+        indicatorType: "info"
+        iconSource: "cruisecontrol.svg"
+    }
+    // Hi-Beams (info)
+    WarningIndicator {
+        active: vehicleState.hiBeamsActive
+        indicatorType: "info"
+        iconSource: "hibeam.svg"
+    }
+    // Lo-Beams (info)
+    WarningIndicator {
+        active: vehicleState.loBeamsActive
+        indicatorType: "info"
+        iconSource: "lobeam.svg"
     }
 }
