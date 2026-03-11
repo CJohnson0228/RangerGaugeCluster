@@ -13,15 +13,37 @@ ApplicationWindow {
     visible: true
     title: "Ranger Infotainment UI"
     color: themeService.background
-    Behavior on color {
-        ColorAnimation {
-            duration: themeService.toggleTimer
-        }
-    }
+    Behavior on color { ColorAnimation { duration: themeService.toggleTimer }}
 
     // Image Background
     AmbientBackground {
         id: ambientBackground
         Component.onCompleted: themeService.backgroundItem = ambientBackground
+    }
+
+    ColumnLayout {
+        anchors.fill: parent
+        spacing: 10
+
+        InfotainmentHeader {
+            Layout.fillWidth: true
+        }
+
+        // Content area — Where App output will be at
+        // (Spotify/Youtube/Navigation)
+        Item {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+        }
+
+        //Climate Controls
+        ClimateControl {
+            Layout.fillWidth: true
+        }
+
+        // Control Buttons (app buttone)
+        InfotainmentFooter {
+            Layout.fillWidth: true
+        }
     }
 }

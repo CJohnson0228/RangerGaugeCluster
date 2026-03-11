@@ -56,6 +56,7 @@ class ThemeService : public QObject
     Q_PROPERTY(QString fontQuicksand READ fontQuicksand CONSTANT)
     Q_PROPERTY(QString fontOxanium READ fontOxanium CONSTANT)
     Q_PROPERTY(QString fontBigShoulders READ fontBigShoulders CONSTANT)
+    Q_PROPERTY(QString fontOrbitron READ fontOrbitron CONSTANT)
 
     // Background item for glassmorphic blur
     Q_PROPERTY(QQuickItem* backgroundItem READ backgroundItem
@@ -109,6 +110,7 @@ public:
     QString fontQuicksand() const { return m_fontQuicksand; }
     QString fontOxanium() const { return m_fontOxanium; }
     QString fontBigShoulders() const { return m_fontBigShoulders; }
+    QString fontOrbitron() const { return m_fontOrbitron; }
 
     // Background item
     QQuickItem* backgroundItem() const { return m_backgroundItem; }
@@ -119,6 +121,7 @@ public slots:
     void setFontQuicksand(const QString& v) { m_fontQuicksand = v; }
     void setFontOxanium(const QString& v) { m_fontOxanium = v; }
     void setFontBigShoulders(const QString& v) { m_fontBigShoulders = v; }
+    void setFontOrbitron(const QString& v) { m_fontOrbitron = v; }
 
 signals:
     void darkModeChanged();
@@ -152,6 +155,7 @@ private:
     QString m_fontQuicksand;
     QString m_fontOxanium;
     QString m_fontBigShoulders;
+    QString m_fontOrbitron;
 
     // Background item
     QQuickItem* m_backgroundItem = nullptr;

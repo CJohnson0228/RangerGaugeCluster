@@ -15,6 +15,7 @@ void SettingsService::load()
 {
     m_themeBehavior             = m_settings.value("themeBehavior", "auto").toString();
     m_metricUnits               = m_settings.value("metricUnits", false).toBool();
+    m_use24HourTime             = m_settings.value("use24HourTime", false).toBool();
     m_doorAutoLock              = m_settings.value("doorAutoLock", false).toBool();
     m_drlLights                 = m_settings.value("drlLights", true).toBool();
     m_maintenanceIntervalMiles  = m_settings.value("maintenanceIntervalMiles", 5000).toInt();
@@ -27,6 +28,7 @@ void SettingsService::save()
 {
     m_settings.setValue("themeBehavior", m_themeBehavior);
     m_settings.setValue("metricUnits", m_metricUnits);
+    m_settings.setValue("use24HourTime", m_use24HourTime);
     m_settings.setValue("doorAutoLock", m_doorAutoLock);
     m_settings.setValue("drlLights", m_drlLights);
     m_settings.setValue("maintenanceIntervalMiles", m_maintenanceIntervalMiles);
@@ -38,6 +40,7 @@ void SettingsService::save()
 
 void SettingsService::setThemeBehavior(const QString &v) { if (m_themeBehavior != v) { m_themeBehavior = v; emit themeBehaviorChanged(); save(); } }
 void SettingsService::setMetricUnits(bool v) { if (m_metricUnits != v) { m_metricUnits = v; emit metricUnitsChanged(); save(); } }
+void SettingsService::setUse24HourTime(bool v) { if (m_use24HourTime != v) { m_use24HourTime = v; emit use24HourTimeChanged(); save(); } }
 void SettingsService::setDoorAutoLock(bool v) { if (m_doorAutoLock != v) { m_doorAutoLock = v; emit doorAutoLockChanged(); save(); } }
 void SettingsService::setDrlLights(bool v) { if (m_drlLights != v) { m_drlLights = v; emit drlLightsChanged(); save(); } }
 void SettingsService::setMaintenanceIntervalMiles(int v) { if (m_maintenanceIntervalMiles != v) { m_maintenanceIntervalMiles = v; emit maintenanceIntervalMilesChanged(); save(); } }

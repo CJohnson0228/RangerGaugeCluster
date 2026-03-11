@@ -9,6 +9,7 @@
 #include "MediaService.h"
 #include "SettingsService.h"
 #include "UnitsService.h"
+#include "ConnectivityService.h"
 
 int main(int argc, char *argv[])
 {
@@ -22,6 +23,7 @@ int main(int argc, char *argv[])
     MediaService mediaService;
     SettingsService settingsService;
     UnitsService unitsService;
+    ConnectivityService connectivityService;
     unitsService.setDependencies(&vehicleState, &locationService, &settingsService);
 
     auto loadFont = [](const QString& path) -> QString {
@@ -35,6 +37,7 @@ int main(int argc, char *argv[])
     themeService.setFontQuicksand(loadFont(base + "Quicksand.ttf"));
     themeService.setFontOxanium(loadFont(base + "Oxanium.ttf"));
     themeService.setFontBigShoulders(loadFont(base + "BigShoulders.ttf"));
+    themeService.setFontOrbitron(loadFont(base + "Orbitron.ttf"));
 
     // Set app default font
     if (!themeService.fontQuicksand().isEmpty())
@@ -48,6 +51,7 @@ int main(int argc, char *argv[])
         engine.rootContext()->setContextProperty("mediaService", &mediaService);
         engine.rootContext()->setContextProperty("settingsService", &settingsService);
         engine.rootContext()->setContextProperty("unitsService", &unitsService);
+        engine.rootContext()->setContextProperty("connectivityService", &connectivityService);
         // Wire themeBehavior changes to ThemeService
         QObject::connect(&settingsService, &SettingsService::themeBehaviorChanged,
             [&themeService, &settingsService, &locationService]() {

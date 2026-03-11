@@ -24,6 +24,10 @@ class UnitsService : public QObject
     Q_PROPERTY(qreal displayEngineTemp READ displayEngineTemp NOTIFY displayEngineTempChanged)
     Q_PROPERTY(QString tempUnit READ tempUnit NOTIFY tempUnitChanged)
 
+    // Outside temperature
+    Q_PROPERTY(qreal displayOutsideTemp READ displayOutsideTemp NOTIFY displayOutsideTempChanged)
+    Q_PROPERTY(QString outsideTempUnit READ outsideTempUnit NOTIFY tempUnitChanged)
+
     // Fuel
     Q_PROPERTY(qreal displayFuelEconomyLive READ displayFuelEconomyLive NOTIFY displayFuelEconomyLiveChanged)
     Q_PROPERTY(qreal displayFuelEconomyAverage READ displayFuelEconomyAverage NOTIFY displayFuelEconomyAverageChanged)
@@ -64,6 +68,8 @@ public:
     // Engine
     qreal displayEngineTemp() const;
     QString tempUnit() const;
+    qreal displayOutsideTemp() const;
+    QString outsideTempUnit() const { return isMetric() ? "°C" : "°F"; }
 
     // Fuel
     qreal displayFuelEconomyLive() const;
@@ -97,6 +103,7 @@ signals:
     // Engine
     void displayEngineTempChanged();
     void tempUnitChanged();
+    void displayOutsideTempChanged();
 
     // Fuel
     void displayFuelEconomyLiveChanged();

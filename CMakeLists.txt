@@ -30,6 +30,7 @@ qt_add_executable(HMItest
         src/MediaService.h
         src/UnitsService.cpp
         src/UnitsService.h
+        src/ConnectivityService.h
 )
 
 
@@ -55,18 +56,26 @@ qt_add_qml_module(HMItest
         qml/UI/GaugeCluster/WarningIndicator.qml
         qml/UI/GaugeCluster/WarningIndicators.qml
         qml/UI/GaugeCluster/GeneralReadouts.qml
+        qml/UI/Infotainment/InfotainmentHeader.qml
+        qml/UI/Infotainment/ClimateControl.qml
+        qml/UI/Infotainment/InfotainmentFooter.qml
+        qml/UI/Infotainment/FooterButton.qml
+        qml/UI/Infotainment/RangerLogo.qml
         RESOURCES
         resources/fonts/BigShoulders.ttf
         resources/fonts/Quicksand.ttf
         resources/fonts/Oxanium.ttf
+        resources/fonts/Orbitron.ttf
         resources/images/bg_dark.jpg
         resources/images/bg_light.jpg
         resources/images/tool.jpg
         resources/images/TopView.svg
         resources/icons/batterywarning.svg
+        resources/icons/bluetooth-b.svg
         resources/icons/brakewarning.svg
         resources/icons/checkengine.svg
         resources/icons/coolanttempwarning.svg
+        resources/icons/cog.svg
         resources/icons/cruisecontrol.svg
         resources/icons/exclamation-circle.svg
         resources/icons/exclamation-triangle.svg
@@ -75,17 +84,21 @@ qt_add_qml_module(HMItest
         resources/icons/hazard.svg
         resources/icons/hibeam.svg
         resources/icons/lobeam.svg
+        resources/icons/map-marked-alt.svg
         resources/icons/oilwarning.svg
         resources/icons/parkwarning.svg
         resources/icons/seatbeltwarning.svg
+        resources/icons/spotify.svg
         resources/icons/tirepresswarning.svg
         resources/icons/washers.svg
         resources/icons/wipers.svg
         resources/icons/arrow-small-left.svg
         resources/icons/arrow-small-right.svg
+        resources/icons/bluetooth.svg
         resources/icons/gear.svg
         resources/icons/music.svg
         resources/icons/pickup-truck.svg
+        resources/icons/youtube.svg
 )
 
 set_target_properties(HMItest PROPERTIES

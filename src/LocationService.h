@@ -13,6 +13,7 @@ class LocationService : public QObject
     Q_PROPERTY(qreal longitude READ longitude WRITE setLongitude NOTIFY longitudeChanged)
     Q_PROPERTY(QString sunriseTime READ sunriseTime WRITE setSunriseTime NOTIFY sunriseTimeChanged)
     Q_PROPERTY(QString sunsetTime READ sunsetTime WRITE setSunsetTime NOTIFY sunsetTimeChanged)
+    Q_PROPERTY(qreal outsideTemp READ outsideTemp WRITE setOutsideTemp NOTIFY outsideTempChanged)  // °C; -999 = no data
 
 public:
     explicit LocationService(QObject *parent = nullptr);
@@ -22,6 +23,7 @@ public:
     qreal longitude() const { return m_longitude; }
     QString sunriseTime() const { return m_sunriseTime; }
     QString sunsetTime() const { return m_sunsetTime; }
+    qreal outsideTemp() const { return m_outsideTemp; }
 
 public slots:
     void setLocalSpeedLimit(qreal v);
@@ -29,6 +31,7 @@ public slots:
     void setLongitude(qreal v);
     void setSunriseTime(const QString &v);
     void setSunsetTime(const QString &v);
+    void setOutsideTemp(qreal v);
 
     signals:
         void localSpeedLimitChanged();
@@ -36,6 +39,7 @@ public slots:
     void longitudeChanged();
     void sunriseTimeChanged();
     void sunsetTimeChanged();
+    void outsideTempChanged();
 
 private:
     qreal m_localSpeedLimit = 88.5;
@@ -43,4 +47,5 @@ private:
     qreal m_longitude = -83.6324;
     QString m_sunriseTime = "06:30";
     QString m_sunsetTime  = "19:45";
+    qreal m_outsideTemp   = -999.0;  // °C; -999 = no data yet
 };

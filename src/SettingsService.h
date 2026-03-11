@@ -15,6 +15,7 @@ class SettingsService : public QObject
 
     // Display
     Q_PROPERTY(bool metricUnits READ metricUnits WRITE setMetricUnits NOTIFY metricUnitsChanged)
+    Q_PROPERTY(bool use24HourTime READ use24HourTime WRITE setUse24HourTime NOTIFY use24HourTimeChanged)
 
     // Vehicle behavior
     Q_PROPERTY(bool doorAutoLock READ doorAutoLock WRITE setDoorAutoLock NOTIFY doorAutoLockChanged)
@@ -31,6 +32,7 @@ public:
 
     QString themeBehavior() const { return m_themeBehavior; }
     bool metricUnits() const { return m_metricUnits; }
+    bool use24HourTime() const { return m_use24HourTime; }
     bool doorAutoLock() const { return m_doorAutoLock; }
     bool drlLights() const { return m_drlLights; }
     int maintenanceIntervalMiles() const { return m_maintenanceIntervalMiles; }
@@ -41,6 +43,7 @@ public:
 public slots:
     void setThemeBehavior(const QString &v);
     void setMetricUnits(bool v);
+    void setUse24HourTime(bool v);
     void setDoorAutoLock(bool v);
     void setDrlLights(bool v);
     void setMaintenanceIntervalMiles(int v);
@@ -51,6 +54,7 @@ public slots:
 signals:
     void themeBehaviorChanged();
     void metricUnitsChanged();
+    void use24HourTimeChanged();
     void doorAutoLockChanged();
     void drlLightsChanged();
     void maintenanceIntervalMilesChanged();
@@ -66,6 +70,7 @@ private:
 
     QString m_themeBehavior             = "auto";
     bool    m_metricUnits               = false;
+    bool    m_use24HourTime             = false;
     bool    m_doorAutoLock              = false;
     bool    m_drlLights                 = true;
     int     m_maintenanceIntervalMiles  = 5000;

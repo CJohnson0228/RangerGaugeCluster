@@ -22,6 +22,7 @@ void UnitsService::setDependencies(VehicleState *vehicle,
 
     // Engine
     connect(m_vehicle,  &VehicleState::engineTempChanged,         this, &UnitsService::displayEngineTempChanged);
+    connect(m_location, &LocationService::outsideTempChanged,     this, &UnitsService::displayOutsideTempChanged);
 
     // Fuel
     connect(m_vehicle,  &VehicleState::fuelEconomyLiveChanged,    this, &UnitsService::displayFuelEconomyLiveChanged);
@@ -58,6 +59,7 @@ void UnitsService::onUnitsChanged()
 
     // Engine
     emit displayEngineTempChanged();
+    emit displayOutsideTempChanged();
     emit tempUnitChanged();
 
     // Fuel
@@ -107,6 +109,14 @@ qreal UnitsService::displayEngineTemp() const
 }
 
 QString UnitsService::tempUnit() const { return isMetric() ? "°C" : "°F"; }
+
+qreal UnitsService::displayOutsideTemp() const
+{
+    if (!m_location) return -999.0;
+    qreal raw = m_location->outsideTemp();
+    if (raw <= -999.0) return -999.0;  // no data sentinel passes through
+    return isMetric() ? raw : raw * 9.0 / 5.0 + 32.0;
+}
 
 // Fuel
 qreal UnitsService::displayFuelEconomyLive() const
