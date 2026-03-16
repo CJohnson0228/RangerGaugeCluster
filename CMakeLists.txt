@@ -31,6 +31,9 @@ qt_add_executable(HMItest
         src/UnitsService.cpp
         src/UnitsService.h
         src/ConnectivityService.h
+        src/WeatherService.h
+        src/WeatherService.cpp
+        src/ClimateService.h
 )
 
 
@@ -43,6 +46,10 @@ qt_add_qml_module(HMItest
         qml/ClusterView.qml
         qml/InfotainmentView.qml
         qml/AmbientBackground.qml
+        qml/UI/General/Glass.qml
+        qml/UI/General/Paper.qml
+        qml/UI/General/Card.qml
+        qml/UI/General/Dial.qml
         qml/UI/GaugeCluster/DataIcon.qml
         qml/UI/GaugeCluster/InstrumentData.qml
         qml/UI/GaugeCluster/Speedo.qml
@@ -57,7 +64,9 @@ qt_add_qml_module(HMItest
         qml/UI/GaugeCluster/WarningIndicators.qml
         qml/UI/GaugeCluster/GeneralReadouts.qml
         qml/UI/Infotainment/InfotainmentHeader.qml
-        qml/UI/Infotainment/ClimateControl.qml
+        qml/UI/Infotainment/ClimateControlPanel.qml
+        qml/UI/Infotainment/WeatherPanel.qml
+        qml/UI/Infotainment/VehicleDataPanel.qml
         qml/UI/Infotainment/InfotainmentFooter.qml
         qml/UI/Infotainment/FooterButton.qml
         qml/UI/Infotainment/RangerLogo.qml
@@ -66,16 +75,39 @@ qt_add_qml_module(HMItest
         resources/fonts/Quicksand.ttf
         resources/fonts/Oxanium.ttf
         resources/fonts/Orbitron.ttf
+        resources/images/weather/clearday.png
+        resources/images/weather/clearnight.png
+        resources/images/weather/partlycloudyday.png
+        resources/images/weather/partlycloudynight.png
+        resources/images/weather/overcast.png
+        resources/images/weather/foggy.png
+        resources/images/weather/rainingday.png
+        resources/images/weather/rainingnight.png
+        resources/images/weather/showersday.png
+        resources/images/weather/showersnight.png
+        resources/images/weather/snowingday.png
+        resources/images/weather/snowingnight.png
+        resources/images/weather/thunderstorms.png
+        resources/images/weather/sleet.png
         resources/images/bg_dark.jpg
         resources/images/bg_light.jpg
         resources/images/tool.jpg
         resources/images/TopView.svg
+        resources/icons/ClimateControl/vents.svg
+        resources/icons/ClimateControl/floorvents.svg
+        resources/icons/ClimateControl/defrost.svg
+        resources/icons/ClimateControl/floordefrost.svg
+        resources/icons/ClimateControl/floor.svg
+        resources/icons/ClimateControl/fan.svg
         resources/icons/batterywarning.svg
         resources/icons/bluetooth-b.svg
         resources/icons/brakewarning.svg
         resources/icons/checkengine.svg
         resources/icons/coolanttempwarning.svg
-        resources/icons/cog.svg
+        resources/icons/hulu.svg
+        resources/icons/netflix.svg
+        resources/icons/google-maps.svg
+        resources/icons/settings.svg
         resources/icons/cruisecontrol.svg
         resources/icons/exclamation-circle.svg
         resources/icons/exclamation-triangle.svg

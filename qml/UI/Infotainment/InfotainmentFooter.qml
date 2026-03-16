@@ -21,42 +21,51 @@ Item {
     Rectangle {
         id: rectangle
         anchors.fill: parent
-        border.color: themeService.darkBorder
-        border.width: 1
         gradient: Gradient {
             orientation: Gradient.Vertical
-            GradientStop { position: 0.0;  color: themeService.darkGradientOuter }
-            GradientStop { position: 0.15; color: themeService.darkGradientInner }
-            GradientStop { position: 0.85; color: themeService.darkGradientInner }
+            GradientStop { position: 0.0;  color: themeService.darkBorder }
+            GradientStop { position: 0.01;  color: themeService.darkGradientOuter }
+            GradientStop { position: 0.1; color: themeService.darkGradientInner }
             GradientStop { position: 1.0;  color: themeService.darkGradientOuter }
         }
     }
 
     RowLayout {
-        spacing: 2
+        anchors.fill: parent
+        spacing: 5
 
-        // get better svg icons for apps
+        Item { Layout.fillWidth: true }
 
         // Spotify
         FooterButton {
-            iconColor: "#1db954"
             iconSource: "spotify.svg"
         }
 
         // Youtube
         FooterButton {
-            iconColor: "#ff0000"
             iconSource: "youtube.svg"
+        }
+
+        // Hulu
+        FooterButton {
+            iconSource: "hulu.svg"
+        }
+
+        // Metflix
+        FooterButton {
+            iconSource: "netflix.svg"
         }
 
         // Navigation
         FooterButton {
-            iconSource: "map-marked-alt.svg"
+            iconSource: "google-maps.svg"
         }
 
         // Settings
         FooterButton {
-            iconSource: "cog.svg"
+            iconSource: "settings.svg"
         }
+
+        Item { Layout.fillWidth: true }
     }
 }

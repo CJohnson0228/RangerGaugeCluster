@@ -21,14 +21,12 @@ Item {
     Rectangle {
         id: rectangle
         anchors.fill: parent
-        border.color: themeService.darkBorder
-        border.width: 1
         gradient: Gradient {
             orientation: Gradient.Vertical
             GradientStop { position: 0.0;  color: themeService.darkGradientOuter }
-            GradientStop { position: 0.15; color: themeService.darkGradientInner }
-            GradientStop { position: 0.85; color: themeService.darkGradientInner }
-            GradientStop { position: 1.0;  color: themeService.darkGradientOuter }
+            GradientStop { position: 0.9; color: themeService.darkGradientInner }
+            GradientStop { position: 0.99;  color: themeService.darkGradientOuter }
+            GradientStop { position: 1.0;  color: themeService.darkBorder }
         }
 
         // Clock — ticks every minute, re-evaluates format when use24HourTime changes
@@ -58,7 +56,7 @@ Item {
                     font.family: themeService.fontOxanium
                     font.pixelSize: 28
                     font.weight: Font.Medium
-                    color: themeService.foreground
+                    color: themeService.darkForeground
                     Behavior on color { ColorAnimation { duration: themeService.toggleTimer }}
                 }
 
@@ -68,7 +66,7 @@ Item {
                         : unitsService.displayOutsideTemp.toFixed(1) + " " + unitsService.outsideTempUnit
                     font.family: themeService.fontOxanium
                     font.pixelSize: 14
-                    color: themeService.textMuted
+                    color: themeService.darkTextMuted
                     Behavior on color { ColorAnimation { duration: themeService.toggleTimer }}
                 }
             }
@@ -85,16 +83,19 @@ Item {
 
                 // Bluetooth icon
                 Image {
-                    width: 26; height: 26
-                    sourceSize.width: 26; sourceSize.height: 26
+                    readonly property int iconSize: 30;
+                    width: iconSize
+                    height: iconSize
+                    sourceSize.width: iconSize
+                    sourceSize.height: iconSize
                     source: themeService.iconPath + "bluetooth-b.svg"
                     fillMode: Image.PreserveAspectFit
                     layer.enabled: true
                     layer.effect: MultiEffect {
                         colorization: 1.0
                         colorizationColor: connectivityService.btConnected
-                            ? themeService.info
-                            : themeService.muted
+                            ? themeService.darkSuccess
+                            : themeService.darkMuted
                         Behavior on colorizationColor { ColorAnimation { duration: 300 }}
                     }
                 }
@@ -113,8 +114,8 @@ Item {
                             anchors.bottom: parent.bottom
                             radius: 2
                             color: index < connectivityService.cellSignalBars
-                                ? themeService.success
-                                : themeService.muted
+                                ? themeService.darkSuccess
+                                : themeService.darkMuted
                             Behavior on color { ColorAnimation { duration: 300 }}
                         }
                     }

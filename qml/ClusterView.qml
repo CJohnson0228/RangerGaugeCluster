@@ -16,7 +16,6 @@ ApplicationWindow {
     // Image Background
     AmbientBackground {
         id: ambientBackground
-        Component.onCompleted: themeService.backgroundItem = ambientBackground
     }
 
     ColumnLayout {

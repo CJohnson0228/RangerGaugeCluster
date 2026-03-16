@@ -36,8 +36,18 @@ ApplicationWindow {
             Layout.fillHeight: true
         }
 
-        //Climate Controls
-        ClimateControl {
+        // Vehicle Data
+        VehicleDataPanel {
+            Layout.fillWidth: true
+        }
+
+        // Weather Display
+        WeatherPanel {
+            Layout.fillWidth: true
+        }
+
+        // Climate Controls
+        ClimateControlPanel {
             Layout.fillWidth: true
         }
 

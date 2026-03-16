@@ -13,7 +13,16 @@ Item {
     property real minValue: 0
     property real maxValue: unitsService.speedMaxValue
     property real value: unitsService.displaySpeed
-    Behavior on value { NumberAnimation { duration: 200; easing.type: Easing.OutCubic }}
+    property bool animated: true
+    Behavior on value { enabled: root.animated; NumberAnimation { duration: 200; easing.type: Easing.OutCubic }}
+
+    Connections {
+        target: settingsService
+        function onMetricUnitsChanged() {
+            root.animated = false
+            Qt.callLater(function() { root.animated = true })
+        }
+    }
 
     property real startAngle: 150
     property real endAngle: 390

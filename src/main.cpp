@@ -10,6 +10,8 @@
 #include "SettingsService.h"
 #include "UnitsService.h"
 #include "ConnectivityService.h"
+#include "WeatherService.h"
+#include "ClimateService.h"
 
 int main(int argc, char *argv[])
 {
@@ -24,7 +26,17 @@ int main(int argc, char *argv[])
     SettingsService settingsService;
     UnitsService unitsService;
     ConnectivityService connectivityService;
+    WeatherService weatherService;
+    ClimateService climateService;
     unitsService.setDependencies(&vehicleState, &locationService, &settingsService);
+
+    // Wire weather temp → locationService.outsideTemp
+    // (replaced by physical sensor signal later — nothing else changes)
+    QObject::connect(&weatherService, &WeatherService::currentTempChanged,
+        [&weatherService, &locationService]() {
+            locationService.setOutsideTemp(weatherService.currentTemp());
+        });
+    weatherService.setLocationService(&locationService);
 
     auto loadFont = [](const QString& path) -> QString {
         int id = QFontDatabase::addApplicationFont(path);
@@ -52,6 +64,8 @@ int main(int argc, char *argv[])
         engine.rootContext()->setContextProperty("settingsService", &settingsService);
         engine.rootContext()->setContextProperty("unitsService", &unitsService);
         engine.rootContext()->setContextProperty("connectivityService", &connectivityService);
+        engine.rootContext()->setContextProperty("weatherService", &weatherService);
+        engine.rootContext()->setContextProperty("climateService", &climateService);
         // Wire themeBehavior changes to ThemeService
         QObject::connect(&settingsService, &SettingsService::themeBehaviorChanged,
             [&themeService, &settingsService, &locationService]() {

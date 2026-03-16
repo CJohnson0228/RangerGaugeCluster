@@ -141,20 +141,6 @@ ApplicationWindow {
                 onValueModified: locationService.localSpeedLimit = value
             }
 
-            // Outside temperature — °C raw (-999 = no data)
-            Text { text: "Outside Temp (°C)"; color: "white" }
-            Slider {
-                Layout.fillWidth: true
-                from: -40; to: 50; stepSize: 0.5
-                value: locationService.outsideTemp >= -999 ? locationService.outsideTemp : -40
-                onValueChanged: locationService.outsideTemp = value
-            }
-            Button {
-                Layout.columnSpan: 2; Layout.fillWidth: true
-                text: "Outside Temp: No Data"
-                onClicked: locationService.outsideTemp = -999
-            }
-
             // Section header
             Text { Layout.columnSpan: 2; text: "── Connectivity ──"; color: "white"; font.pixelSize: 11 }
 
