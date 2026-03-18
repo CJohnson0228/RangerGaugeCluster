@@ -6,6 +6,8 @@ import HMItestUI
 Glass {
     anchors.fill: parent
 
+    property url iconSource
+
     // Expose inner WebEngineView properties so child components can set them directly
     property alias url:       webEngine.url
     property alias profile:   webEngine.profile
@@ -15,14 +17,14 @@ Glass {
     signal pageLoaded()
     function goBack()              { webEngine.goBack() }
     function runJavaScript(script) { webEngine.runJavaScript(script) }
-    function injectScrollbarFix() {
-        webEngine.runJavaScript("
-            var s = document.createElement('style');
-            s.textContent = '::-webkit-scrollbar { display: none !important; }'
-                          + '* { scrollbar-width: none !important; -ms-overflow-style: none !important; }';
-            document.head.appendChild(s);
-        ")
-    }
+    // function injectScrollbarFix() {
+    //     webEngine.runJavaScript("
+    //         var s = document.createElement('style');
+    //         s.textContent = '::-webkit-scrollbar { display: none !important; }'
+    //                       + '* { scrollbar-width: none !important; -ms-overflow-style: none !important; }';
+    //         document.head.appendChild(s);
+    //     ")
+    // }
 
     // Clip WebEngineView to the same rounded corners as the Glass mask
     Item {
@@ -42,6 +44,14 @@ Glass {
             maskSpreadAtMin: 1.0
         }
 
+        Image {
+            anchors.centerIn: parent
+            width: 192
+            height: 192
+            source: iconSource
+            fillMode: Image.PreserveAspectFit
+        }
+
         WebEngineView {
             id: webEngine
             anchors.fill: parent
@@ -52,6 +62,7 @@ Glass {
             settings.javascriptEnabled: true
             settings.localStorageEnabled: true
             settings.pluginsEnabled: true
+            settings.showScrollBars: false
 
             onPermissionRequested: function(permission) { permission.grant() }
             onFullScreenRequested: function(request)    { request.accept() }
@@ -59,7 +70,7 @@ Glass {
 
             onLoadingChanged: function(info) {
                 if (info.status === WebEngineLoadingInfo.LoadSucceededStatus) {
-                    injectScrollbarFix()
+                    // injectScrollbarFix()
                     pageLoaded()
                 } else if (info.status === WebEngineLoadingInfo.LoadStartedStatus) {
                     fadeIn.stop()
@@ -75,14 +86,14 @@ Glass {
 
             Timer {
                 id: fadeDelay
-                interval: 600
+                interval: 200
                 onTriggered: fadeIn.start()
             }
 
             NumberAnimation on opacity {
                 id: fadeIn
                 to: 1.0
-                duration: 400
+                duration: 200
                 easing.type: Easing.InOutQuad
             }
         }

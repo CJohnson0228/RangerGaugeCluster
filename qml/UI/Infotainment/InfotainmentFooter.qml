@@ -74,6 +74,13 @@ Item {
         }
 
         FooterButton {
+            appId: "googlemaps"
+            iconSource: "maps.svg"
+            active: root.currentApp === "googlemaps"
+            onTapped: (id) => root.appTapped(id)
+        }
+
+        FooterButton {
             appId: "navigation"
             iconSource: "google-maps.svg"
             active: root.currentApp === "navigation"

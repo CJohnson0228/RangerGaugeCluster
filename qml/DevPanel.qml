@@ -211,6 +211,48 @@ ApplicationWindow {
                 text: "Toggle Time Format (" + (settingsService.use24HourTime ? "24hr" : "12hr") + ")"
                 onClicked: settingsService.use24HourTime = !settingsService.use24HourTime
             }
+
+            // ── Navigation ────────────────────────────────────────────────────
+            Label {
+                Layout.columnSpan: 2; Layout.fillWidth: true
+                text: "── Navigation ──"
+                horizontalAlignment: Text.AlignHCenter
+                font.bold: true
+            }
+            // Route to Atlanta (preset for Macon, GA starting location)
+            Button {
+                Layout.columnSpan: 2; Layout.fillWidth: true
+                text: "Route: Macon → Atlanta"
+                onClicked: navigationService.fetchRoute(33.7490, -84.3880, "Atlanta, GA")
+            }
+            Button {
+                Layout.columnSpan: 2; Layout.fillWidth: true
+                text: "Start Navigation"
+                enabled: !navigationService.isNavigating && navigationService.destName !== ""
+                onClicked: navigationService.startNavigation()
+            }
+            Button {
+                Layout.columnSpan: 2; Layout.fillWidth: true
+                text: "Advance Step"
+                enabled: navigationService.isNavigating
+                onClicked: navigationService.advanceStep()
+            }
+            Button {
+                Layout.columnSpan: 2; Layout.fillWidth: true
+                text: "Stop Navigation"
+                enabled: navigationService.isNavigating
+                onClicked: navigationService.stopNavigation()
+            }
+            Label {
+                Layout.columnSpan: 2; Layout.fillWidth: true
+                text: navigationService.isNavigating
+                    ? "Step: " + navigationService.instruction
+                    : navigationService.destName !== ""
+                        ? "Ready: " + navigationService.destName
+                        : "No route"
+                wrapMode: Text.WordWrap
+                font.pixelSize: 11
+            }
         }
     }
 }

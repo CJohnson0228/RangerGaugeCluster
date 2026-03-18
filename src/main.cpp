@@ -15,11 +15,13 @@
 #include "WeatherService.h"
 #include "ClimateService.h"
 #include "SpotifyService.h"
+#include "NavigationService.h"
 
 int main(int argc, char *argv[])
 {
     // Must be set before QGuiApplication so WebEngineProfile storage paths are stable
     QCoreApplication::setApplicationName("HMItest");
+
 
     // Widevine CDM for DRM content (Netflix, Hulu) — only enable on car hardware
     // where Chrome is installed. Mismatched flags on dev machine invalidate profile state.
@@ -42,6 +44,7 @@ int main(int argc, char *argv[])
     WeatherService weatherService;
     ClimateService climateService;
     SpotifyService spotifyService;
+    NavigationService navigationService;
 
     // Web app profiles — created in C++ so storageName is set at construction,
     // not as a QML property after the fact (which caused the off-the-record warning)
@@ -60,6 +63,7 @@ int main(int argc, char *argv[])
     QQuickWebEngineProfile *netflixWebProfile    = makeProfile("netflix");
     QQuickWebEngineProfile *audibleWebProfile    = makeProfile("audible");
     QQuickWebEngineProfile *navigationWebProfile = makeProfile("navigation");
+    navigationService.setLocationService(&locationService);
     unitsService.setDependencies(&vehicleState, &locationService, &settingsService);
 
     // Wire weather temp → locationService.outsideTemp
@@ -122,6 +126,7 @@ int main(int argc, char *argv[])
         engine.rootContext()->setContextProperty("netflixWebProfile",    netflixWebProfile);
         engine.rootContext()->setContextProperty("audibleWebProfile",    audibleWebProfile);
         engine.rootContext()->setContextProperty("navigationWebProfile", navigationWebProfile);
+        engine.rootContext()->setContextProperty("navigationService", &navigationService);
         // Wire themeBehavior changes to ThemeService
         QObject::connect(&settingsService, &SettingsService::themeBehaviorChanged,
             [&themeService, &settingsService, &locationService]() {

@@ -10,6 +10,7 @@ Item {
         anchors.fill: parent
         url: "https://www.audible.com"
         profile: audibleWebProfile
+        iconSource: themeService.iconPath + "audible.svg"
     }
 
     Rectangle {

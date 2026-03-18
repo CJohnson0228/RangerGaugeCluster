@@ -56,6 +56,12 @@ ApplicationWindow {
             Loader {
                 anchors.fill: parent
                 active: true
+                visible: window.currentApp === "googlemaps"
+                source: Qt.resolvedUrl("UI/Infotainment/apps/GoogleMapsApp.qml")
+            }
+            Loader {
+                anchors.fill: parent
+                active: true
                 visible: window.currentApp === "navigation"
                 source: Qt.resolvedUrl("UI/Infotainment/apps/NavigationApp.qml")
             }

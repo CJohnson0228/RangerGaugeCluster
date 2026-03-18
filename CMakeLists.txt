@@ -1,7 +1,21 @@
 cmake_minimum_required(VERSION 4.1)
 project(HMItest VERSION 0.1 LANGUAGES CXX)
 
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+include(FetchContent)
+FetchContent_Declare(
+    maplibre-native-qt
+    GIT_REPOSITORY https://github.com/maplibre/maplibre-native-qt.git
+    GIT_TAG        main
+    GIT_SUBMODULES_RECURSE ON
+)
+set(MLN_QT_WITH_QUICK   ON  CACHE BOOL "" FORCE)
+set(MLN_QT_WITH_WIDGETS OFF CACHE BOOL "" FORCE)
+set(MLN_WITH_OPENGL     ON  CACHE BOOL "" FORCE)
+set(MLN_WITH_WERROR     OFF CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(maplibre-native-qt)
 
 find_package(Qt6 REQUIRED COMPONENTS
         Core
@@ -13,6 +27,8 @@ find_package(Qt6 REQUIRED COMPONENTS
         Svg
         WebEngineQuick
         VirtualKeyboard
+        Location
+        Positioning
 )
 
 qt_standard_project_setup(REQUIRES 6.10)
@@ -37,6 +53,8 @@ qt_add_executable(HMItest
         src/ClimateService.h
         src/SpotifyService.h
         src/SpotifyService.cpp
+        src/NavigationService.h
+        src/NavigationService.cpp
 )
 
 
@@ -77,6 +95,7 @@ qt_add_qml_module(HMItest
         qml/UI/Infotainment/apps/AudibleApp.qml
         qml/UI/Infotainment/apps/SpotifyApp.qml
         qml/UI/Infotainment/apps/YoutubeApp.qml
+        qml/UI/Infotainment/apps/GoogleMapsApp.qml
         qml/UI/Infotainment/apps/HuluApp.qml
         qml/UI/Infotainment/apps/NetflixApp.qml
         qml/UI/Infotainment/apps/NavigationApp.qml
@@ -119,6 +138,7 @@ qt_add_qml_module(HMItest
         resources/icons/hulu.svg
         resources/icons/netflix.svg
         resources/icons/google-maps.svg
+        resources/icons/maps.svg
         resources/icons/settings.svg
         resources/icons/cruisecontrol.svg
         resources/icons/exclamation-circle.svg
@@ -163,6 +183,18 @@ target_link_libraries(HMItest
         Qt6::Svg
         Qt6::WebEngineQuick
         Qt6::VirtualKeyboard
+        Qt6::Location
+        Qt6::Positioning
+        QMapLibre::QuickPrivate
+)
+
+# Copy maplibre geoservices plugin next to the HMItest binary after each build
+# so Qt Location can find it in the default {appDir}/geoservices/ search path
+add_custom_command(TARGET HMItest POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_BINARY_DIR}/_deps/maplibre-native-qt-build/src/location/plugins/geoservices"
+        "$<TARGET_FILE_DIR:HMItest>/geoservices"
+    COMMENT "Copying maplibre geoservices plugin"
 )
 
 target_include_directories(HMItest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)

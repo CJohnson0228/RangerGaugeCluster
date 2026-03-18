@@ -5,6 +5,7 @@ import HMItestUI
 WebAppView {
     url: "https://www.hulu.com"
     profile: huluWebProfile
+    iconSource: themeService.iconPath + "hulu.svg"
     settings.playbackRequiresUserGesture: false
 
     // Override to add geolocation spoof alongside scrollbar fix.
