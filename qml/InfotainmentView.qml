@@ -33,7 +33,7 @@ ApplicationWindow {
         }
 
         // App viewport — panels below never move; only this area changes
-        Glass {
+        Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
             Layout.leftMargin:  20
@@ -60,7 +60,7 @@ ApplicationWindow {
                 source: Qt.resolvedUrl("UI/Infotainment/apps/NavigationApp.qml")
             }
 
-            // ── On-demand apps — profiles live above, passed in on load ──────────
+            // ── On-demand apps ────────────────────────────────────────────────────
             Loader {
                 anchors.fill: parent
                 active: window.currentApp === "youtube"

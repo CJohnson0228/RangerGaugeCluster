@@ -3,7 +3,7 @@
 #include <QQuickStyle>
 #include <QQmlContext>
 #include <QtWebEngineQuick/QtWebEngineQuick>
-#include <QWebEngineProfile>
+#include <QQuickWebEngineProfile>
 #include <QFontDatabase>
 #include "VehicleState.h"
 #include "ThemeService.h"
@@ -20,12 +20,12 @@ int main(int argc, char *argv[])
 {
     // Must be set before QGuiApplication so WebEngineProfile storage paths are stable
     QCoreApplication::setApplicationName("HMItest");
-    QCoreApplication::setOrganizationName("HMItest");
 
-    // Point QtWebEngine at Chrome's Widevine CDM for DRM content (Netflix, Hulu)
-    qputenv("QTWEBENGINE_CHROMIUM_FLAGS",
-        "--widevine-cdm-path=/opt/google/chrome/WidevineCdm"
-        " --enable-features=PlatformEncryptedDolbyVision");
+    // Widevine CDM for DRM content (Netflix, Hulu) — only enable on car hardware
+    // where Chrome is installed. Mismatched flags on dev machine invalidate profile state.
+    // qputenv("QTWEBENGINE_CHROMIUM_FLAGS",
+    //     "--widevine-cdm-path=/opt/google/chrome/WidevineCdm"
+    //     " --enable-features=PlatformEncryptedDolbyVision");
     QtWebEngineQuick::initialize();
     qputenv("QT_IM_MODULE", "qtvirtualkeyboard");
     QGuiApplication app(argc, argv);
@@ -45,17 +45,21 @@ int main(int argc, char *argv[])
 
     // Web app profiles — created in C++ so storageName is set at construction,
     // not as a QML property after the fact (which caused the off-the-record warning)
-    auto makeProfile = [](const QString &name) {
-        auto *p = new QWebEngineProfile(name);
-        p->setPersistentCookiesPolicy(QWebEngineProfile::ForcePersistentCookies);
+    auto makeProfile = [&app](const QString &name) {
+        auto *p = new QQuickWebEngineProfile(name, &app);
+        p->setPersistentCookiesPolicy(QQuickWebEngineProfile::ForcePersistentCookies);
         return p;
     };
-    QWebEngineProfile *spotifyWebProfile    = makeProfile("spotify");
-    QWebEngineProfile *youtubeWebProfile    = makeProfile("youtube");
-    QWebEngineProfile *huluWebProfile       = makeProfile("hulu");
-    QWebEngineProfile *netflixWebProfile    = makeProfile("netflix");
-    QWebEngineProfile *audibleWebProfile    = makeProfile("audible");
-    QWebEngineProfile *navigationWebProfile = makeProfile("navigation");
+    QQuickWebEngineProfile *spotifyWebProfile    = makeProfile("spotify");
+    QQuickWebEngineProfile *youtubeWebProfile    = makeProfile("youtube");
+    youtubeWebProfile->setHttpUserAgent(
+        "Mozilla/5.0 (Linux; Android 13; Pixel 7) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/131.0.0.0 Mobile Safari/537.36");
+    QQuickWebEngineProfile *huluWebProfile       = makeProfile("hulu");
+    QQuickWebEngineProfile *netflixWebProfile    = makeProfile("netflix");
+    QQuickWebEngineProfile *audibleWebProfile    = makeProfile("audible");
+    QQuickWebEngineProfile *navigationWebProfile = makeProfile("navigation");
     unitsService.setDependencies(&vehicleState, &locationService, &settingsService);
 
     // Wire weather temp → locationService.outsideTemp

@@ -3,7 +3,7 @@ project(HMItest VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 COMPONENTS
+find_package(Qt6 REQUIRED COMPONENTS
         Core
         Quick
         Quick3D
@@ -13,7 +13,6 @@ find_package(Qt6 COMPONENTS
         Svg
         WebEngineQuick
         VirtualKeyboard
-        REQUIRED
 )
 
 qt_standard_project_setup(REQUIRES 6.10)
@@ -74,6 +73,7 @@ qt_add_qml_module(HMItest
         qml/UI/Infotainment/InfotainmentFooter.qml
         qml/UI/Infotainment/FooterButton.qml
         qml/UI/Infotainment/RangerLogo.qml
+        qml/UI/Infotainment/apps/WebAppView.qml
         qml/UI/Infotainment/apps/AudibleApp.qml
         qml/UI/Infotainment/apps/SpotifyApp.qml
         qml/UI/Infotainment/apps/YoutubeApp.qml
