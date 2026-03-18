@@ -11,6 +11,8 @@ find_package(Qt6 COMPONENTS
         Network
         Sql
         Svg
+        WebEngineQuick
+        VirtualKeyboard
         REQUIRED
 )
 
@@ -34,6 +36,8 @@ qt_add_executable(HMItest
         src/WeatherService.h
         src/WeatherService.cpp
         src/ClimateService.h
+        src/SpotifyService.h
+        src/SpotifyService.cpp
 )
 
 
@@ -70,6 +74,13 @@ qt_add_qml_module(HMItest
         qml/UI/Infotainment/InfotainmentFooter.qml
         qml/UI/Infotainment/FooterButton.qml
         qml/UI/Infotainment/RangerLogo.qml
+        qml/UI/Infotainment/apps/AudibleApp.qml
+        qml/UI/Infotainment/apps/SpotifyApp.qml
+        qml/UI/Infotainment/apps/YoutubeApp.qml
+        qml/UI/Infotainment/apps/HuluApp.qml
+        qml/UI/Infotainment/apps/NetflixApp.qml
+        qml/UI/Infotainment/apps/NavigationApp.qml
+        qml/UI/Infotainment/apps/SettingsApp.qml
         RESOURCES
         resources/fonts/BigShoulders.ttf
         resources/fonts/Quicksand.ttf
@@ -100,6 +111,7 @@ qt_add_qml_module(HMItest
         resources/icons/ClimateControl/floor.svg
         resources/icons/ClimateControl/fan.svg
         resources/icons/batterywarning.svg
+        resources/icons/audible.svg
         resources/icons/bluetooth-b.svg
         resources/icons/brakewarning.svg
         resources/icons/checkengine.svg
@@ -149,6 +161,8 @@ target_link_libraries(HMItest
         Qt6::Network
         Qt6::Sql
         Qt6::Svg
+        Qt6::WebEngineQuick
+        Qt6::VirtualKeyboard
 )
 
 target_include_directories(HMItest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)

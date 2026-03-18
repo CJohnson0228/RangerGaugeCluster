@@ -10,14 +10,27 @@ ColumnLayout {
 
     anchors.fill: parent
     spacing: 2
+
+    function formatMs(ms) {
+        var s = Math.floor(ms / 1000)
+        var m = Math.floor(s / 60)
+        s = s % 60
+        return m + ":" + (s < 10 ? "0" : "") + s
+    }
+
     // Media Image
-    Image {
-        id: mediaImage
+    Item {
+        id: mediaImageContent
         visible: false
         width: 200
         height: 200
-        source: themeService.imagePath + mediaService.sourceImage
-        fillMode: Image.PreserveAspectCrop
+        layer.enabled: true
+
+        Image {
+            anchors.fill: parent
+            source: mediaService.albumArtUrl
+            fillMode: Image.PreserveAspectCrop
+        }
     }
 
     Rectangle {
@@ -33,7 +46,7 @@ ColumnLayout {
         Layout.alignment: Qt.AlignHCenter
         width: 200
         height: 200
-        source: mediaImage
+        source: mediaImageContent
         maskEnabled: true
         maskSource: imageMask
     }
@@ -50,7 +63,7 @@ ColumnLayout {
 
             Text {
                 Layout.alignment: Qt.AlignHCenter
-                text: mediaService.trackName
+                text: mediaService.trackName.length > 0 ? mediaService.trackName : "—"
                 color: themeService.foreground
                 font.pixelSize: 24
                 font.family: themeService.fontQuicksand
@@ -76,7 +89,7 @@ ColumnLayout {
         Text {
             anchors.left: parent.left
             anchors.verticalCenter: progressBar.verticalCenter
-            text: "1:42"
+            text: formatMs(mediaService.progressMs)
             font.family: themeService.fontQuicksand
             font.pixelSize: 11
             color: themeService.textMuted
@@ -98,7 +111,8 @@ ColumnLayout {
             }
 
             Rectangle {
-                width: parent.width * 0.4
+                width: parent.width * (mediaService.durationMs > 0
+                    ? mediaService.progressMs / mediaService.durationMs : 0)
                 height: parent.height
                 radius: 2
                 color: themeService.primary
@@ -109,7 +123,7 @@ ColumnLayout {
         Text {
             anchors.right: parent.right
             anchors.verticalCenter: progressBar.verticalCenter
-            text: "4:50"
+            text: formatMs(mediaService.durationMs)
             font.family: themeService.fontQuicksand
             font.pixelSize: 11
             color: themeService.textMuted

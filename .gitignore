@@ -22,6 +22,9 @@ qrc_*
 ui_*
 *.moc
 
+# Secrets — never commit
+.env
+
 # User specific
 *.user
 *.user.*

@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Effects
+import QtQuick.VirtualKeyboard
 import HMItestUI
 
 ApplicationWindow {
@@ -14,6 +15,8 @@ ApplicationWindow {
     title: "Ranger Infotainment UI"
     color: themeService.background
     Behavior on color { ColorAnimation { duration: themeService.toggleTimer }}
+
+    property string currentApp: ""
 
     // Image Background
     AmbientBackground {
@@ -29,11 +32,55 @@ ApplicationWindow {
             Layout.fillWidth: true
         }
 
-        // Content area — Where App output will be at
-        // (Spotify/Youtube/Navigation)
-        Item {
+        // App viewport — panels below never move; only this area changes
+        Glass {
             Layout.fillWidth: true
             Layout.fillHeight: true
+            Layout.leftMargin:  20
+            Layout.rightMargin: 20
+            Layout.topMargin: 20
+
+            // ── Persistent apps (stay loaded, audio/GPS keeps running) ──────────
+            Loader {
+                anchors.fill: parent
+                active: true
+                visible: window.currentApp === "spotify"
+                source: Qt.resolvedUrl("UI/Infotainment/apps/SpotifyApp.qml")
+            }
+            Loader {
+                anchors.fill: parent
+                active: true
+                visible: window.currentApp === "audible"
+                source: Qt.resolvedUrl("UI/Infotainment/apps/AudibleApp.qml")
+            }
+            Loader {
+                anchors.fill: parent
+                active: true
+                visible: window.currentApp === "navigation"
+                source: Qt.resolvedUrl("UI/Infotainment/apps/NavigationApp.qml")
+            }
+
+            // ── On-demand apps — profiles live above, passed in on load ──────────
+            Loader {
+                anchors.fill: parent
+                active: window.currentApp === "youtube"
+                source: Qt.resolvedUrl("UI/Infotainment/apps/YoutubeApp.qml")
+            }
+            Loader {
+                anchors.fill: parent
+                active: window.currentApp === "hulu"
+                source: Qt.resolvedUrl("UI/Infotainment/apps/HuluApp.qml")
+            }
+            Loader {
+                anchors.fill: parent
+                active: window.currentApp === "netflix"
+                source: Qt.resolvedUrl("UI/Infotainment/apps/NetflixApp.qml")
+            }
+            Loader {
+                anchors.fill: parent
+                active: window.currentApp === "settings"
+                source: Qt.resolvedUrl("UI/Infotainment/apps/SettingsApp.qml")
+            }
         }
 
         // Vehicle Data
@@ -51,9 +98,20 @@ ApplicationWindow {
             Layout.fillWidth: true
         }
 
-        // Control Buttons (app buttone)
+        // Virtual keyboard — floats above footer when a text field is active
+        InputPanel {
+            id: inputPanel
+            Layout.fillWidth: true
+            visible: active
+        }
+
+        // Control Buttons (app buttons)
         InfotainmentFooter {
             Layout.fillWidth: true
+            currentApp: window.currentApp
+            onAppTapped: (appId) => {
+                window.currentApp = (window.currentApp === appId) ? "" : appId
+            }
         }
     }
 }

@@ -5,6 +5,9 @@ import HMItestUI
 
 Item {
     id: root
+    property string currentApp: ""
+    signal appTapped(string appId)
+
     width: parent.width
     height: 80
 
@@ -19,13 +22,12 @@ Item {
     }
 
     Rectangle {
-        id: rectangle
         anchors.fill: parent
         gradient: Gradient {
             orientation: Gradient.Vertical
             GradientStop { position: 0.0;  color: themeService.darkBorder }
-            GradientStop { position: 0.01;  color: themeService.darkGradientOuter }
-            GradientStop { position: 0.1; color: themeService.darkGradientInner }
+            GradientStop { position: 0.01; color: themeService.darkGradientOuter }
+            GradientStop { position: 0.1;  color: themeService.darkGradientInner }
             GradientStop { position: 1.0;  color: themeService.darkGradientOuter }
         }
     }
@@ -36,34 +38,53 @@ Item {
 
         Item { Layout.fillWidth: true }
 
-        // Spotify
         FooterButton {
+            appId: "spotify"
             iconSource: "spotify.svg"
+            active: root.currentApp === "spotify"
+            onTapped: (id) => root.appTapped(id)
         }
 
-        // Youtube
         FooterButton {
+            appId: "audible"
+            iconSource: "audible.svg"
+            active: root.currentApp === "audible"
+            onTapped: (id) => root.appTapped(id)
+        }
+
+        FooterButton {
+            appId: "youtube"
             iconSource: "youtube.svg"
+            active: root.currentApp === "youtube"
+            onTapped: (id) => root.appTapped(id)
         }
 
-        // Hulu
         FooterButton {
+            appId: "hulu"
             iconSource: "hulu.svg"
+            active: root.currentApp === "hulu"
+            onTapped: (id) => root.appTapped(id)
         }
 
-        // Metflix
         FooterButton {
+            appId: "netflix"
             iconSource: "netflix.svg"
+            active: root.currentApp === "netflix"
+            onTapped: (id) => root.appTapped(id)
         }
 
-        // Navigation
         FooterButton {
+            appId: "navigation"
             iconSource: "google-maps.svg"
+            active: root.currentApp === "navigation"
+            onTapped: (id) => root.appTapped(id)
         }
 
-        // Settings
         FooterButton {
+            appId: "settings"
             iconSource: "settings.svg"
+            active: root.currentApp === "settings"
+            onTapped: (id) => root.appTapped(id)
         }
 
         Item { Layout.fillWidth: true }

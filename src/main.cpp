@@ -2,6 +2,8 @@
 #include <QQmlApplicationEngine>
 #include <QQuickStyle>
 #include <QQmlContext>
+#include <QtWebEngineQuick/QtWebEngineQuick>
+#include <QWebEngineProfile>
 #include <QFontDatabase>
 #include "VehicleState.h"
 #include "ThemeService.h"
@@ -12,9 +14,20 @@
 #include "ConnectivityService.h"
 #include "WeatherService.h"
 #include "ClimateService.h"
+#include "SpotifyService.h"
 
 int main(int argc, char *argv[])
 {
+    // Must be set before QGuiApplication so WebEngineProfile storage paths are stable
+    QCoreApplication::setApplicationName("HMItest");
+    QCoreApplication::setOrganizationName("HMItest");
+
+    // Point QtWebEngine at Chrome's Widevine CDM for DRM content (Netflix, Hulu)
+    qputenv("QTWEBENGINE_CHROMIUM_FLAGS",
+        "--widevine-cdm-path=/opt/google/chrome/WidevineCdm"
+        " --enable-features=PlatformEncryptedDolbyVision");
+    QtWebEngineQuick::initialize();
+    qputenv("QT_IM_MODULE", "qtvirtualkeyboard");
     QGuiApplication app(argc, argv);
     QQuickStyle::setStyle("Basic");
 
@@ -28,6 +41,21 @@ int main(int argc, char *argv[])
     ConnectivityService connectivityService;
     WeatherService weatherService;
     ClimateService climateService;
+    SpotifyService spotifyService;
+
+    // Web app profiles — created in C++ so storageName is set at construction,
+    // not as a QML property after the fact (which caused the off-the-record warning)
+    auto makeProfile = [](const QString &name) {
+        auto *p = new QWebEngineProfile(name);
+        p->setPersistentCookiesPolicy(QWebEngineProfile::ForcePersistentCookies);
+        return p;
+    };
+    QWebEngineProfile *spotifyWebProfile    = makeProfile("spotify");
+    QWebEngineProfile *youtubeWebProfile    = makeProfile("youtube");
+    QWebEngineProfile *huluWebProfile       = makeProfile("hulu");
+    QWebEngineProfile *netflixWebProfile    = makeProfile("netflix");
+    QWebEngineProfile *audibleWebProfile    = makeProfile("audible");
+    QWebEngineProfile *navigationWebProfile = makeProfile("navigation");
     unitsService.setDependencies(&vehicleState, &locationService, &settingsService);
 
     // Wire weather temp → locationService.outsideTemp
@@ -37,6 +65,23 @@ int main(int argc, char *argv[])
             locationService.setOutsideTemp(weatherService.currentTemp());
         });
     weatherService.setLocationService(&locationService);
+
+    // Wire SpotifyService → MediaService so the cluster always shows active media
+    auto syncSpotify = [&]() {
+        mediaService.setAlbumArtUrl(spotifyService.albumArtUrl());
+        mediaService.setTrackName(spotifyService.trackName());
+        mediaService.setArtistName(spotifyService.artistName());
+        mediaService.setAlbumName(spotifyService.albumName());
+        mediaService.setIsPlaying(spotifyService.isPlaying());
+        mediaService.setProgressMs(spotifyService.progressMs());
+        mediaService.setDurationMs(spotifyService.durationMs());
+        mediaService.setSourceName("Spotify");
+    };
+    QObject::connect(&spotifyService, &SpotifyService::trackNameChanged,    syncSpotify);
+    QObject::connect(&spotifyService, &SpotifyService::albumArtUrlChanged,  syncSpotify);
+    QObject::connect(&spotifyService, &SpotifyService::isPlayingChanged,    syncSpotify);
+    QObject::connect(&spotifyService, &SpotifyService::progressMsChanged,   syncSpotify);
+    QObject::connect(&spotifyService, &SpotifyService::durationMsChanged,   syncSpotify);
 
     auto loadFont = [](const QString& path) -> QString {
         int id = QFontDatabase::addApplicationFont(path);
@@ -66,6 +111,13 @@ int main(int argc, char *argv[])
         engine.rootContext()->setContextProperty("connectivityService", &connectivityService);
         engine.rootContext()->setContextProperty("weatherService", &weatherService);
         engine.rootContext()->setContextProperty("climateService", &climateService);
+        engine.rootContext()->setContextProperty("spotifyService", &spotifyService);
+        engine.rootContext()->setContextProperty("spotifyWebProfile",    spotifyWebProfile);
+        engine.rootContext()->setContextProperty("youtubeWebProfile",    youtubeWebProfile);
+        engine.rootContext()->setContextProperty("huluWebProfile",       huluWebProfile);
+        engine.rootContext()->setContextProperty("netflixWebProfile",    netflixWebProfile);
+        engine.rootContext()->setContextProperty("audibleWebProfile",    audibleWebProfile);
+        engine.rootContext()->setContextProperty("navigationWebProfile", navigationWebProfile);
         // Wire themeBehavior changes to ThemeService
         QObject::connect(&settingsService, &SettingsService::themeBehaviorChanged,
             [&themeService, &settingsService, &locationService]() {
