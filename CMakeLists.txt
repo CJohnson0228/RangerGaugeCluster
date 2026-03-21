@@ -4,18 +4,12 @@ project(HMItest VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-include(FetchContent)
-FetchContent_Declare(
-    maplibre-native-qt
-    GIT_REPOSITORY https://github.com/maplibre/maplibre-native-qt.git
-    GIT_TAG        main
-    GIT_SUBMODULES_RECURSE ON
+# MapLibre Native Qt — built and installed separately via scripts/build-maplibre.sh
+# Install prefix: ~/Qt/maplibre-qt
+find_package(QMapLibre REQUIRED COMPONENTS Core QuickPrivate Location
+    PATHS "$ENV{HOME}/Qt/maplibre-qt"
+    NO_DEFAULT_PATH
 )
-set(MLN_QT_WITH_QUICK   ON  CACHE BOOL "" FORCE)
-set(MLN_QT_WITH_WIDGETS OFF CACHE BOOL "" FORCE)
-set(MLN_WITH_OPENGL     ON  CACHE BOOL "" FORCE)
-set(MLN_WITH_WERROR     OFF CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(maplibre-native-qt)
 
 find_package(Qt6 REQUIRED COMPONENTS
         Core
@@ -165,6 +159,7 @@ qt_add_qml_module(HMItest
         resources/icons/youtube.svg
 )
 
+
 set_target_properties(HMItest PROPERTIES
         MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
         MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
@@ -185,16 +180,8 @@ target_link_libraries(HMItest
         Qt6::VirtualKeyboard
         Qt6::Location
         Qt6::Positioning
+        QMapLibre::Location
         QMapLibre::QuickPrivate
-)
-
-# Copy maplibre geoservices plugin next to the HMItest binary after each build
-# so Qt Location can find it in the default {appDir}/geoservices/ search path
-add_custom_command(TARGET HMItest POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${CMAKE_BINARY_DIR}/_deps/maplibre-native-qt-build/src/location/plugins/geoservices"
-        "$<TARGET_FILE_DIR:HMItest>/geoservices"
-    COMMENT "Copying maplibre geoservices plugin"
 )
 
 target_include_directories(HMItest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)

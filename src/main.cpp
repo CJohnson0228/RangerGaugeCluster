@@ -5,6 +5,7 @@
 #include <QtWebEngineQuick/QtWebEngineQuick>
 #include <QQuickWebEngineProfile>
 #include <QFontDatabase>
+#include <QDir>
 #include "VehicleState.h"
 #include "ThemeService.h"
 #include "LocationService.h"
@@ -21,6 +22,8 @@ int main(int argc, char *argv[])
 {
     // Must be set before QGuiApplication so WebEngineProfile storage paths are stable
     QCoreApplication::setApplicationName("HMItest");
+    // Let Qt Location find the maplibre geoservices plugin
+    QCoreApplication::addLibraryPath(QDir::homePath() + "/Qt/maplibre-qt/plugins");
 
 
     // Widevine CDM for DRM content (Netflix, Hulu) — only enable on car hardware
@@ -30,6 +33,7 @@ int main(int argc, char *argv[])
     //     " --enable-features=PlatformEncryptedDolbyVision");
     QtWebEngineQuick::initialize();
     qputenv("QT_IM_MODULE", "qtvirtualkeyboard");
+    qputenv("QT_VIRTUALKEYBOARD_STYLE", "ranger");
     QGuiApplication app(argc, argv);
     QQuickStyle::setStyle("Basic");
 
@@ -110,6 +114,7 @@ int main(int argc, char *argv[])
 
     // Helper lambda to configure an engine
     auto setupEngine = [&](QQmlApplicationEngine& engine) {
+
         engine.rootContext()->setContextProperty("vehicleState", &vehicleState);
         engine.rootContext()->setContextProperty("themeService", &themeService);
         engine.rootContext()->setContextProperty("locationService", &locationService);

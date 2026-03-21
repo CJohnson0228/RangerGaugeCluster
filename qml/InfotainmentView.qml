@@ -24,6 +24,16 @@ ApplicationWindow {
         Component.onCompleted: themeService.backgroundItem = ambientBackground
     }
 
+    // Virtual keyboard — overlays UI, anchored to bottom of window
+    InputPanel {
+        id: inputPanel
+        z: 100
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        visible: active
+    }
+
     ColumnLayout {
         anchors.fill: parent
         spacing: 10
@@ -102,13 +112,6 @@ ApplicationWindow {
         // Climate Controls
         ClimateControlPanel {
             Layout.fillWidth: true
-        }
-
-        // Virtual keyboard — floats above footer when a text field is active
-        InputPanel {
-            id: inputPanel
-            Layout.fillWidth: true
-            visible: active
         }
 
         // Control Buttons (app buttons)
