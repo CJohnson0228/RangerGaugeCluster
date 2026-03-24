@@ -1,6 +1,7 @@
 #pragma once
 #include <QObject>
 #include <QNetworkAccessManager>
+#include <QNetworkRequest>
 #include <QTcpServer>
 #include <QTimer>
 
@@ -50,7 +51,10 @@ private:
     void exchangeCode(const QString &code);
     void refreshAccessToken();
     void fetchCurrentlyPlaying();
+    void handleCurrentlyPlayingResponse(QNetworkReply *reply);
+    void applyTrackState(const QJsonObject &json);
     void sendPlayerCommand(const QString &endpoint, const QString &method);
+    QNetworkRequest buildAuthRequest(const QString &url);
 
     QNetworkAccessManager m_network;
     QTcpServer            m_callbackServer;

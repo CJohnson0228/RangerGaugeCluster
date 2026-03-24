@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Effects
 import HMItestUI
 
 Item {
@@ -13,25 +14,40 @@ Item {
     width: 72
     height: 72
 
-    Rectangle {
-        anchors.fill: parent
-        radius: 3
-        color: active ? Qt.rgba(themeService.primary.r, themeService.primary.g, themeService.primary.b, 0.2) : "transparent"
-        border.width: active ? 2 : 1
-        border.color: active ? themeService.primary : themeService.darkBorder
-        Behavior on color       { ColorAnimation { duration: 150 }}
-        Behavior on border.color { ColorAnimation { duration: 150 }}
-    }
+    scale: mouseArea.pressed ? 0.88 : 1.0
+    Behavior on scale { NumberAnimation { duration: 100; easing.type: Easing.OutCubic }}
 
     Image {
         anchors.centerIn: parent
-        width: 50; height: 50
-        sourceSize.width: 50; sourceSize.height: 50
+        anchors.verticalCenterOffset: -3
+        width: 46; height: 46
+        sourceSize.width: 46; sourceSize.height: 46
         source: themeService.iconPath + root.iconSource
         fillMode: Image.PreserveAspectFit
+        layer.enabled: true
+        layer.effect: MultiEffect {
+            colorization: root.active ? 0.0 : 1.0
+            colorizationColor: themeService.darkTextMuted
+            Behavior on colorization { NumberAnimation { duration: 180 }}
+        }
+    }
+
+    // Active indicator bar
+    Rectangle {
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 5
+        width: root.active ? 28 : 6
+        height: 3
+        radius: 2
+        color: themeService.primary
+        opacity: root.active ? 1.0 : 0.0
+        Behavior on width   { NumberAnimation { duration: 220; easing.type: Easing.OutCubic }}
+        Behavior on opacity { NumberAnimation { duration: 180 }}
     }
 
     MouseArea {
+        id: mouseArea
         anchors.fill: parent
         onClicked: root.tapped(root.appId)
     }

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #0b0a0a; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<script>
+    let map = null;
+    let vehicleMarker = null;
+    let destMarker = null;
+    let isNavigating = false;
+
+    function initMap(accessToken) {
+        mapboxgl.accessToken = accessToken;
+
+        map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/navigation-night-v1',
+            center: [-83.6324, 32.8407],
+            zoom: 13,
+            pitch: 0,
+            bearing: 0,
+            attributionControl: false
+        });
+
+        map.on('load', function () {
+            // Route casing (dark outline under route line)
+            map.addSource('route', {
+                type: 'geojson',
+                data: { type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: [] } }
+            });
+            map.addLayer({
+                id: 'route-casing',
+                type: 'line',
+                source: 'route',
+                layout: { 'line-join': 'round', 'line-cap': 'round' },
+                paint: { 'line-color': '#000000', 'line-width': 14, 'line-opacity': 0.5 }
+            });
+            map.addLayer({
+                id: 'route-line',
+                type: 'line',
+                source: 'route',
+                layout: { 'line-join': 'round', 'line-cap': 'round' },
+                paint: { 'line-color': '#ff9d11', 'line-width': 8 }
+            });
+
+            // Vehicle marker — amber chevron SVG, rotates with map bearing
+            const vehicleEl = document.createElement('div');
+            vehicleEl.innerHTML = `
+                <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                    <filter id="shadow">
+                        <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="rgba(0,0,0,0.6)"/>
+                    </filter>
+                    <polygon points="24,4 44,44 24,34 4,44"
+                             fill="#ff9d11" stroke="#ffffff" stroke-width="3"
+                             stroke-linejoin="round" filter="url(#shadow)"/>
+                </svg>`;
+            vehicleEl.style.cssText = 'width:48px;height:48px;cursor:default;';
+
+            vehicleMarker = new mapboxgl.Marker({
+                element: vehicleEl,
+                rotationAlignment: 'map',
+                pitchAlignment: 'map',
+                anchor: 'center'
+            })
+            .setLngLat([-83.6324, 32.8407])
+            .addTo(map);
+
+            // Destination marker
+            const destEl = document.createElement('div');
+            destEl.style.cssText = `
+                width: 18px; height: 18px; border-radius: 50%;
+                background: #ff2612; border: 3px solid #ffffff;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.5);`;
+            destMarker = new mapboxgl.Marker({ element: destEl, anchor: 'center' })
+                .setLngLat([-83.6324, 32.8407])
+                .addTo(map);
+            destMarker.getElement().style.display = 'none';
+
+            // Signal QML the map is ready
+            if (typeof qt !== 'undefined' && qt.webChannelTransport) {
+                // webchannel path (not used here)
+            }
+            window._mapReady = true;
+        });
+    }
+
+    // Called from QML — update vehicle position and heading
+    function updateVehicle(lat, lon, heading) {
+        if (!vehicleMarker) return;
+        vehicleMarker.setLngLat([lon, lat]);
+        vehicleMarker.setRotation(heading);
+    }
+
+    // Called from QML — smooth camera follow during navigation
+    function centerOnVehicle(lat, lon, bearing, pitch, zoom) {
+        if (!map) return;
+        var opts = {
+            center:   [lon, lat],
+            bearing:  (bearing !== null && bearing !== undefined) ? bearing : map.getBearing(),
+            pitch:    (pitch   !== null && pitch   !== undefined) ? pitch   : map.getPitch(),
+            duration: 250
+        };
+        if (zoom !== null && zoom !== undefined) opts.zoom = zoom;
+        map.easeTo(opts);
+    }
+
+    // Called from QML — set route geometry
+    function updateRoute(coordinates) {
+        if (!map || !map.getSource('route')) return;
+        map.getSource('route').setData({
+            type: 'Feature',
+            properties: {},
+            geometry: { type: 'LineString', coordinates: coordinates }
+        });
+    }
+
+    // Called from QML — show/hide destination marker
+    function setDestination(lat, lon) {
+        if (!destMarker) return;
+        if (lat === 0 && lon === 0) {
+            destMarker.getElement().style.display = 'none';
+            return;
+        }
+        destMarker.setLngLat([lon, lat]);
+        destMarker.getElement().style.display = 'block';
+    }
+
+    // Called from QML — fly to show full route after it arrives
+    function showRouteOverview(midLat, midLon) {
+        if (!map) return;
+        map.easeTo({ center: [midLon, midLat], zoom: 10, pitch: 0, bearing: 0, duration: 600 });
+    }
+
+    // Called from QML — switch between nav and browse mode
+    function setNavigating(nav) {
+        isNavigating = nav;
+        if (!nav) {
+            destMarker.getElement().style.display = 'none';
+            map.easeTo({ pitch: 0, bearing: 0, duration: 500 });
+        }
+    }
+</script>
+</body>
+</html>

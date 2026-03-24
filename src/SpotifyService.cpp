@@ -199,44 +199,53 @@ void SpotifyService::refreshAccessToken() {
     });
 }
 
-void SpotifyService::fetchCurrentlyPlaying() {
-    QNetworkRequest req(QUrl("https://api.spotify.com/v1/me/player/currently-playing"));
+QNetworkRequest SpotifyService::buildAuthRequest(const QString &url) {
+    QNetworkRequest req{QUrl(url)};
     req.setRawHeader("Authorization", ("Bearer " + m_accessToken).toUtf8());
+    return req;
+}
 
-    auto *reply = m_network.get(req);
+void SpotifyService::fetchCurrentlyPlaying() {
+    auto *reply = m_network.get(
+        buildAuthRequest("https://api.spotify.com/v1/me/player/currently-playing"));
     connect(reply, &QNetworkReply::finished, this, [this, reply]() {
         reply->deleteLater();
-        const int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-
-        if (status == 401) { refreshAccessToken(); return; }
-        if (status == 204 || reply->error() != QNetworkReply::NoError) {
-            if (m_isPlaying) { m_isPlaying = false; emit isPlayingChanged(); }
-            return;
-        }
-
-        const auto json   = QJsonDocument::fromJson(reply->readAll()).object();
-        const auto item   = json["item"].toObject();
-        const auto album  = item["album"].toObject();
-        const auto artists = item["artists"].toArray();
-
-        bool    playing   = json["is_playing"].toBool();
-        int     progress  = json["progress_ms"].toInt();
-        int     duration  = item["duration_ms"].toInt();
-        QString track     = item["name"].toString();
-        QString artist    = artists.isEmpty() ? QString()
-                          : artists[0].toObject()["name"].toString();
-        QString albumName = album["name"].toString();
-        QString artUrl    = album["images"].toArray().isEmpty() ? QString()
-                          : album["images"].toArray()[0].toObject()["url"].toString();
-
-        if (m_trackName   != track)     { m_trackName    = track;     emit trackNameChanged(); }
-        if (m_artistName  != artist)    { m_artistName   = artist;    emit artistNameChanged(); }
-        if (m_albumName   != albumName) { m_albumName    = albumName; emit albumNameChanged(); }
-        if (m_albumArtUrl != artUrl)    { m_albumArtUrl  = artUrl;    emit albumArtUrlChanged(); }
-        if (m_isPlaying   != playing)   { m_isPlaying    = playing;   emit isPlayingChanged(); }
-        if (m_progressMs  != progress)  { m_progressMs   = progress;  emit progressMsChanged(); }
-        if (m_durationMs  != duration)  { m_durationMs   = duration;  emit durationMsChanged(); }
+        handleCurrentlyPlayingResponse(reply);
     });
+}
+
+void SpotifyService::handleCurrentlyPlayingResponse(QNetworkReply *reply) {
+    const int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    if (status == 401) { refreshAccessToken(); return; }
+    if (status == 204 || reply->error() != QNetworkReply::NoError) {
+        if (m_isPlaying) { m_isPlaying = false; emit isPlayingChanged(); }
+        return;
+    }
+    applyTrackState(QJsonDocument::fromJson(reply->readAll()).object());
+}
+
+void SpotifyService::applyTrackState(const QJsonObject &json) {
+    const auto item    = json["item"].toObject();
+    const auto album   = item["album"].toObject();
+    const auto artists = item["artists"].toArray();
+
+    const bool    playing   = json["is_playing"].toBool();
+    const int     progress  = json["progress_ms"].toInt();
+    const int     duration  = item["duration_ms"].toInt();
+    const QString track     = item["name"].toString();
+    const QString artist    = artists.isEmpty() ? QString()
+                            : artists[0].toObject()["name"].toString();
+    const QString albumName = album["name"].toString();
+    const QString artUrl    = album["images"].toArray().isEmpty() ? QString()
+                            : album["images"].toArray()[0].toObject()["url"].toString();
+
+    if (m_trackName   != track)     { m_trackName    = track;     emit trackNameChanged(); }
+    if (m_artistName  != artist)    { m_artistName   = artist;    emit artistNameChanged(); }
+    if (m_albumName   != albumName) { m_albumName    = albumName; emit albumNameChanged(); }
+    if (m_albumArtUrl != artUrl)    { m_albumArtUrl  = artUrl;    emit albumArtUrlChanged(); }
+    if (m_isPlaying   != playing)   { m_isPlaying    = playing;   emit isPlayingChanged(); }
+    if (m_progressMs  != progress)  { m_progressMs   = progress;  emit progressMsChanged(); }
+    if (m_durationMs  != duration)  { m_durationMs   = duration;  emit durationMsChanged(); }
 }
 
 void SpotifyService::togglePlayPause() {
@@ -252,8 +261,7 @@ void SpotifyService::previous() {
 }
 
 void SpotifyService::sendPlayerCommand(const QString &endpoint, const QString &method) {
-    QNetworkRequest req(QUrl("https://api.spotify.com" + endpoint));
-    req.setRawHeader("Authorization", ("Bearer " + m_accessToken).toUtf8());
+    QNetworkRequest req = buildAuthRequest("https://api.spotify.com" + endpoint);
     req.setHeader(QNetworkRequest::ContentLengthHeader, 0);
 
     QNetworkReply *reply = (method == "POST")

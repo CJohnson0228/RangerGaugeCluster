@@ -12,3 +12,4 @@ void LocationService::setLongitude(qreal v) { if (m_longitude != v) { m_longitud
 void LocationService::setSunriseTime(const QString &v) { if (m_sunriseTime != v) { m_sunriseTime = v; emit sunriseTimeChanged(); } }
 void LocationService::setSunsetTime(const QString &v) { if (m_sunsetTime != v) { m_sunsetTime = v; emit sunsetTimeChanged(); } }
 void LocationService::setOutsideTemp(qreal v) { if (m_outsideTemp != v) { m_outsideTemp = v; emit outsideTempChanged(); } }
+void LocationService::setHeading(qreal v) { if (m_heading != v) { m_heading = v; emit headingChanged(); } }

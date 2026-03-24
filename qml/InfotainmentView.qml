@@ -17,6 +17,7 @@ ApplicationWindow {
     Behavior on color { ColorAnimation { duration: themeService.toggleTimer }}
 
     property string currentApp: ""
+    property bool vehicleDataExpanded: false
 
     // Image Background
     AmbientBackground {
@@ -102,6 +103,7 @@ ApplicationWindow {
         // Vehicle Data
         VehicleDataPanel {
             Layout.fillWidth: true
+            expanded: window.vehicleDataExpanded
         }
 
         // Weather Display
@@ -118,8 +120,12 @@ ApplicationWindow {
         InfotainmentFooter {
             Layout.fillWidth: true
             currentApp: window.currentApp
+            vehicleDataExpanded: window.vehicleDataExpanded
             onAppTapped: (appId) => {
-                window.currentApp = (window.currentApp === appId) ? "" : appId
+                if (appId === "truckData")
+                    window.vehicleDataExpanded = !window.vehicleDataExpanded
+                else
+                    window.currentApp = (window.currentApp === appId) ? "" : appId
             }
         }
     }

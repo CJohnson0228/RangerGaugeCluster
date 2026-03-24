@@ -9,6 +9,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QCoreApplication>
+#include <cmath>
 
 NavigationService::NavigationService(QObject *parent) : QObject(parent) {
     loadToken();
@@ -16,10 +17,12 @@ NavigationService::NavigationService(QObject *parent) : QObject(parent) {
 
 void NavigationService::setLocationService(LocationService *loc) {
     m_location = loc;
+    connect(loc, &LocationService::latitudeChanged,  this, &NavigationService::checkPosition);
+    connect(loc, &LocationService::longitudeChanged, this, &NavigationService::checkPosition);
 }
 
 void NavigationService::loadToken() {
-    QStringList candidates = {
+    const QStringList candidates = {
         QCoreApplication::applicationDirPath() + "/.env",
         QCoreApplication::applicationDirPath() + "/../.env"
     };
@@ -31,15 +34,16 @@ void NavigationService::loadToken() {
             const QString line = in.readLine().trimmed();
             if (line.isEmpty() || line.startsWith('#')) continue;
             const int eq = line.indexOf('=');
-            if (eq == -1) continue;
+            if (eq < 0) continue;
             if (line.left(eq).trimmed() == "MAPBOX_ACCESS_TOKEN") {
                 m_accessToken = line.mid(eq + 1).trimmed();
                 return;
             }
         }
     }
-    qWarning() << "NavigationService: MAPBOX_ACCESS_TOKEN not found in .env";
 }
+
+// ── Search ────────────────────────────────────────────────────────────────────
 
 void NavigationService::searchAddress(const QString &address) {
     if (m_accessToken.isEmpty() || !m_location) return;
@@ -47,18 +51,17 @@ void NavigationService::searchAddress(const QString &address) {
     m_isSearching = true;
     emit isSearchingChanged();
 
-    const QString encoded = QUrl::toPercentEncoding(address);
-    QUrl url(QString("https://api.mapbox.com/geocoding/v5/mapbox.places/%1.json").arg(encoded));
-
-    QUrlQuery query;
-    query.addQueryItem("access_token", m_accessToken);
-    query.addQueryItem("limit", "1");
-    query.addQueryItem("proximity",
+    QUrl url(QString("https://api.mapbox.com/geocoding/v5/mapbox.places/%1.json")
+                 .arg(QString::fromUtf8(QUrl::toPercentEncoding(address))));
+    QUrlQuery q;
+    q.addQueryItem("access_token", m_accessToken);
+    q.addQueryItem("limit", "1");
+    q.addQueryItem("proximity",
         QString("%1,%2").arg(m_location->longitude(), 0, 'f', 6)
                         .arg(m_location->latitude(),  0, 'f', 6));
-    url.setQuery(query);
+    url.setQuery(q);
 
-    QNetworkReply *reply = m_network.get(QNetworkRequest(url));
+    auto *reply = m_network.get(QNetworkRequest(url));
     connect(reply, &QNetworkReply::finished, this, [this, reply, address]() {
         parseGeocodeReply(reply, address);
         reply->deleteLater();
@@ -66,55 +69,44 @@ void NavigationService::searchAddress(const QString &address) {
 }
 
 void NavigationService::parseGeocodeReply(QNetworkReply *reply, const QString &destName) {
-    if (reply->error() != QNetworkReply::NoError) {
-        m_isSearching = false;
-        emit isSearchingChanged();
-        emit routeError(reply->errorString());
-        return;
-    }
+    m_isSearching = false;
+    emit isSearchingChanged();
 
-    const QJsonDocument doc  = QJsonDocument::fromJson(reply->readAll());
-    const QJsonArray    feats = doc.object().value("features").toArray();
-    if (feats.isEmpty()) {
-        m_isSearching = false;
-        emit isSearchingChanged();
-        emit routeError("No results for: " + destName);
-        return;
-    }
+    if (reply->error() != QNetworkReply::NoError) { emit routeError(reply->errorString()); return; }
 
-    const QJsonArray center = feats.first().toObject().value("center").toArray();
-    const double toLng = center[0].toDouble();
-    const double toLat = center[1].toDouble();
-    const QString placeName = feats.first().toObject().value("place_name").toString();
+    const QJsonArray feats = QJsonDocument::fromJson(reply->readAll())
+                                 .object().value("features").toArray();
+    if (feats.isEmpty()) { emit routeError("No results for: " + destName); return; }
 
-    // isSearching stays true — fetchRoute will update it
-    fetchRoute(toLat, toLng, placeName);
+    const QJsonObject first  = feats.first().toObject();
+    const QJsonArray  center = first.value("center").toArray();
+    fetchRoute(center[1].toDouble(), center[0].toDouble(),
+               first.value("place_name").toString());
 }
+
+// ── Route ─────────────────────────────────────────────────────────────────────
 
 void NavigationService::fetchRoute(double toLat, double toLng, const QString &destName) {
     if (m_accessToken.isEmpty() || !m_location) return;
 
     m_isSearching = true;
     emit isSearchingChanged();
-
     m_destName = destName;
     emit destNameChanged();
 
     const QString coords = QString("%1,%2;%3,%4")
-        .arg(m_location->longitude(), 0, 'f', 6)
-        .arg(m_location->latitude(),  0, 'f', 6)
-        .arg(toLng, 0, 'f', 6)
-        .arg(toLat, 0, 'f', 6);
+        .arg(m_location->longitude(), 0, 'f', 6).arg(m_location->latitude(),  0, 'f', 6)
+        .arg(toLng,                   0, 'f', 6).arg(toLat,                    0, 'f', 6);
 
     QUrl url(QString("https://api.mapbox.com/directions/v5/mapbox/driving-traffic/%1").arg(coords));
-    QUrlQuery query;
-    query.addQueryItem("access_token", m_accessToken);
-    query.addQueryItem("steps", "true");
-    query.addQueryItem("banner_instructions", "true");
-    query.addQueryItem("geometries", "geojson");
-    url.setQuery(query);
+    QUrlQuery q;
+    q.addQueryItem("access_token",        m_accessToken);
+    q.addQueryItem("steps",               "true");
+    q.addQueryItem("geometries",          "geojson");
+    q.addQueryItem("overview",            "full");
+    url.setQuery(q);
 
-    QNetworkReply *reply = m_network.get(QNetworkRequest(url));
+    auto *reply = m_network.get(QNetworkRequest(url));
     connect(reply, &QNetworkReply::finished, this, [this, reply]() {
         parseDirectionsReply(reply);
         reply->deleteLater();
@@ -125,25 +117,17 @@ void NavigationService::parseDirectionsReply(QNetworkReply *reply) {
     m_isSearching = false;
     emit isSearchingChanged();
 
-    if (reply->error() != QNetworkReply::NoError) {
-        emit routeError(reply->errorString());
-        return;
-    }
+    if (reply->error() != QNetworkReply::NoError) { emit routeError(reply->errorString()); return; }
 
-    const QJsonDocument doc    = QJsonDocument::fromJson(reply->readAll());
-    const QJsonArray    routes = doc.object().value("routes").toArray();
-    if (routes.isEmpty()) {
-        emit routeError("No route found");
-        return;
-    }
+    const QJsonObject root   = QJsonDocument::fromJson(reply->readAll()).object();
+    const QJsonArray  routes = root.value("routes").toArray();
+    if (routes.isEmpty()) { emit routeError("No route found"); return; }
 
     const QJsonObject route = routes.first().toObject();
 
-    // Build route path for MapPolyline — list of {latitude, longitude} maps
+    // Full geometry → map line
     m_routePath.clear();
-    const QJsonArray coords = route.value("geometry").toObject()
-                                   .value("coordinates").toArray();
-    for (const QJsonValue &c : coords) {
+    for (const QJsonValue &c : route.value("geometry").toObject().value("coordinates").toArray()) {
         const QJsonArray pt = c.toArray();
         QVariantMap coord;
         coord["longitude"] = pt[0].toDouble();
@@ -152,27 +136,44 @@ void NavigationService::parseDirectionsReply(QNetworkReply *reply) {
     }
     emit routePathChanged();
 
-    // Build step list
+    // Steps → directions panel list + step advancement data
     m_steps.clear();
     m_totalDurationS = 0;
-    const QJsonArray legs = route.value("legs").toArray();
-    for (const QJsonValue &legVal : legs) {
-        const QJsonArray steps = legVal.toObject().value("steps").toArray();
-        for (const QJsonValue &stepVal : steps) {
-            const QJsonObject step = stepVal.toObject();
-            Step s;
-            s.instruction = step.value("maneuver").toObject().value("instruction").toString();
-            s.distanceM   = step.value("distance").toDouble();
-            s.durationS   = step.value("duration").toDouble();
-            m_totalDurationS += s.durationS;
+    double totalDistM = 0;
+
+    for (const QJsonValue &legVal : route.value("legs").toArray()) {
+        for (const QJsonValue &stepVal : legVal.toObject().value("steps").toArray()) {
+            const QJsonObject stepObj  = stepVal.toObject();
+            const QJsonObject maneuver = stepObj.value("maneuver").toObject();
+            const QJsonArray  loc      = maneuver.value("location").toArray();
+            const double      distM    = stepObj.value("distance").toDouble();
+            const double      durS     = stepObj.value("duration").toDouble();
+
+            QVariantMap s;
+            s["instruction"]  = maneuver.value("instruction").toString();
+            s["type"]         = maneuver.value("type").toString();
+            s["modifier"]     = maneuver.value("modifier").toString();
+            s["distanceText"] = formatDistance(distM);
+            s["endLng"]       = loc[0].toDouble();
+            s["endLat"]       = loc[1].toDouble();
             m_steps.append(s);
+
+            m_totalDurationS += durS;
+            totalDistM       += distM;
         }
     }
 
+    m_etaText       = formatDuration(m_totalDurationS);
+    m_totalDistText = formatDistance(totalDistM);
+    emit stepsChanged();
+    emit etaTextChanged();
+    emit totalDistTextChanged();
+
     m_currentStep = 0;
-    updateStepDisplay();
     emit routeReady();
 }
+
+// ── Navigation state ──────────────────────────────────────────────────────────
 
 void NavigationService::startNavigation() {
     if (m_steps.isEmpty()) return;
@@ -180,55 +181,73 @@ void NavigationService::startNavigation() {
     m_currentStep  = 0;
     updateStepDisplay();
     emit isNavigatingChanged();
+    emit currentStepChanged();
 }
 
 void NavigationService::stopNavigation() {
-    m_isNavigating = false;
+    m_isNavigating  = false;
+    m_currentStep   = 0;
+    m_instruction   = "";
+    m_distanceText  = "";
+    m_etaText       = "";
+    m_totalDistText = "";
+    m_destName      = "";
     m_steps.clear();
     m_routePath.clear();
-    m_instruction  = "";
-    m_distanceText = "";
-    m_etaText      = "";
-    m_destName     = "";
     emit isNavigatingChanged();
     emit routePathChanged();
+    emit stepsChanged();
     emit instructionChanged();
     emit distanceTextChanged();
     emit etaTextChanged();
+    emit totalDistTextChanged();
     emit destNameChanged();
 }
 
-void NavigationService::advanceStep() {
-    if (!m_isNavigating) return;
-    if (m_currentStep >= m_steps.size() - 1) {
-        stopNavigation();
-        return;
+// ── GPS-driven step advancement ───────────────────────────────────────────────
+
+void NavigationService::checkPosition() {
+    if (!m_isNavigating || m_steps.isEmpty() || !m_location) return;
+
+    // Advance when within 30 m of the NEXT step's maneuver point
+    const int nextIdx = m_currentStep + 1;
+    if (nextIdx >= m_steps.size()) return;
+
+    const QVariantMap &next = m_steps[nextIdx].toMap();
+    const double latRad = m_location->latitude() * M_PI / 180.0;
+    const double dLat   = (next["endLat"].toDouble() - m_location->latitude())  * 111111.0;
+    const double dLon   = (next["endLng"].toDouble() - m_location->longitude()) * 111111.0 * std::cos(latRad);
+
+    if (std::sqrt(dLat * dLat + dLon * dLon) < 30.0) {
+        m_currentStep++;
+        emit currentStepChanged();
+        updateStepDisplay();
+
+        if (m_currentStep >= m_steps.size() - 1)
+            stopNavigation();
     }
-    m_currentStep++;
-    updateStepDisplay();
 }
 
 void NavigationService::updateStepDisplay() {
     if (m_steps.isEmpty() || m_currentStep >= m_steps.size()) return;
-
-    const Step &step = m_steps[m_currentStep];
-    m_instruction = step.instruction;
+    const QVariantMap &step = m_steps[m_currentStep].toMap();
+    m_instruction  = step["instruction"].toString();
+    m_distanceText = step["distanceText"].toString();
 
     double remainingS = 0;
     for (int i = m_currentStep; i < m_steps.size(); ++i)
-        remainingS += m_steps[i].durationS;
-
-    m_distanceText = formatDistance(step.distanceM);
-    m_etaText      = formatDuration(remainingS);
+        remainingS += m_steps[i].toMap()["durationS"].toDouble();
+    m_etaText = formatDuration(remainingS);
 
     emit instructionChanged();
     emit distanceTextChanged();
     emit etaTextChanged();
 }
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
 QString NavigationService::formatDistance(double meters) const {
-    if (meters < 1000)
-        return QString("%1 m").arg(static_cast<int>(meters / 10) * 10);
+    if (meters < 1000) return QString("%1 m").arg(static_cast<int>(meters / 10) * 10);
     return QString("%1 km").arg(meters / 1000.0, 0, 'f', 1);
 }
 

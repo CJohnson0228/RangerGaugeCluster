@@ -6,6 +6,7 @@ import HMItestUI
 Item {
     id: root
     property string currentApp: ""
+    property bool vehicleDataExpanded: false
     signal appTapped(string appId)
 
     width: parent.width
@@ -30,6 +31,19 @@ Item {
             GradientStop { position: 0.1;  color: themeService.darkGradientInner }
             GradientStop { position: 1.0;  color: themeService.darkGradientOuter }
         }
+    }
+
+
+    // truck data window toggle button
+    FooterButton {
+        anchors.left: parent.left
+        anchors.leftMargin: 20
+        anchors.verticalCenter: parent.verticalCenter
+
+        appId: "truckData"
+        iconSource: "truck_data.svg"
+        active: root.vehicleDataExpanded
+        onTapped: (id) => root.appTapped(id)
     }
 
     RowLayout {

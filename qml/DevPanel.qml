@@ -213,13 +213,8 @@ ApplicationWindow {
             }
 
             // ── Navigation ────────────────────────────────────────────────────
-            Label {
-                Layout.columnSpan: 2; Layout.fillWidth: true
-                text: "── Navigation ──"
-                horizontalAlignment: Text.AlignHCenter
-                font.bold: true
-            }
-            // Route to Atlanta (preset for Macon, GA starting location)
+            Text { Layout.columnSpan: 2; text: "── Navigation ──"; color: "white"; font.pixelSize: 11 }
+
             Button {
                 Layout.columnSpan: 2; Layout.fillWidth: true
                 text: "Route: Macon → Atlanta"
@@ -227,32 +222,30 @@ ApplicationWindow {
             }
             Button {
                 Layout.columnSpan: 2; Layout.fillWidth: true
-                text: "Start Navigation"
-                enabled: !navigationService.isNavigating && navigationService.destName !== ""
-                onClicked: navigationService.startNavigation()
-            }
-            Button {
-                Layout.columnSpan: 2; Layout.fillWidth: true
-                text: "Advance Step"
-                enabled: navigationService.isNavigating
-                onClicked: navigationService.advanceStep()
-            }
-            Button {
-                Layout.columnSpan: 2; Layout.fillWidth: true
                 text: "Stop Navigation"
                 enabled: navigationService.isNavigating
                 onClicked: navigationService.stopNavigation()
             }
-            Label {
-                Layout.columnSpan: 2; Layout.fillWidth: true
-                text: navigationService.isNavigating
-                    ? "Step: " + navigationService.instruction
-                    : navigationService.destName !== ""
-                        ? "Ready: " + navigationService.destName
-                        : "No route"
-                wrapMode: Text.WordWrap
-                font.pixelSize: 11
+
+            // ── Navigation Camera ──────────────────────────────────────────────
+            Text { Layout.columnSpan: 2; text: "── Navigation Camera ──"; color: "white"; font.pixelSize: 11 }
+
+            Text { text: "Pitch  " + navigationService.navPitch + "°"; color: "white" }
+            Slider {
+                Layout.fillWidth: true
+                from: 0; to: 80; stepSize: 5
+                value: navigationService.navPitch
+                onMoved: navigationService.navPitch = value
             }
+
+            Text { text: "Zoom  " + navigationService.navZoom; color: "white" }
+            Slider {
+                Layout.fillWidth: true
+                from: 14; to: 20; stepSize: 1
+                value: navigationService.navZoom
+                onMoved: navigationService.navZoom = value
+            }
+
         }
     }
 }

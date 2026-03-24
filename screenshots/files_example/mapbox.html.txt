@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mapbox Navigation</title>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
+    <style>
+        body { margin: 0; padding: 0; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<script>
+    // Will be set from QML via Qt WebChannel
+    let map;
+    let vehicleMarker;
+    let destinationMarker;
+    let routeLayer;
+    let qtChannel = null;
+
+    // Overlay state tracking
+    let overlayState = {
+        buildings3D: true,
+        traffic: false,
+        terrain: false,
+        poiLabels: false
+    };
+
+    // Initialize map with access token
+    function initMap(accessToken) {
+        mapboxgl.accessToken = accessToken;
+
+        map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v12',
+            center: [-117.9989, 33.7783],
+            zoom: 17,
+            bearing: 0,
+            pitch: 50  // Tilted view like navigation apps
+        });
+
+        map.on('load', () => {
+            // Add route source
+            map.addSource('route', {
+                'type': 'geojson',
+                'data': {
+                    'type': 'Feature',
+                    'properties': {},
+                    'geometry': {
+                        'type': 'LineString',
+                        'coordinates': []
+                    }
+                }
+            });
+
+            // Add route layer
+            map.addLayer({
+                'id': 'route',
+                'type': 'line',
+                'source': 'route',
+                'layout': {
+                    'line-join': 'round',
+                    'line-cap': 'round'
+                },
+                'paint': {
+                    'line-color': '#4CAF50',
+                    'line-width': 6,
+                    'line-opacity': 0.85
+                }
+            });
+
+            // Create vehicle marker element
+            const vehicleEl = document.createElement('div');
+            vehicleEl.className = 'vehicle-marker';
+            vehicleEl.innerHTML = `
+                <svg width="40" height="40" viewBox="0 0 40 40">
+                    <polygon points="20,5 35,35 20,28 5,35" fill="#2196F3" stroke="#0D47A1" stroke-width="2"/>
+                </svg>
+            `;
+            vehicleEl.style.width = '40px';
+            vehicleEl.style.height = '40px';
+
+            vehicleMarker = new mapboxgl.Marker({
+                element: vehicleEl,
+                rotationAlignment: 'map'
+            })
+            .setLngLat([-117.9989, 33.7783])
+            .addTo(map);
+
+            // Create destination marker
+            const destEl = document.createElement('div');
+            destEl.style.width = '20px';
+            destEl.style.height = '20px';
+            destEl.style.borderRadius = '50%';
+            destEl.style.backgroundColor = 'red';
+            destEl.style.border = '2px solid darkred';
+
+            destinationMarker = new mapboxgl.Marker({ element: destEl })
+                .setLngLat([-117.9377, 33.7745])
+                .addTo(map);
+
+            // Notify QML that map is ready
+            if (qtChannel) {
+                qtChannel.mapReady();
+            }
+        });
+    }
+
+    // Called from QML to update vehicle position
+    function updateVehicle(lat, lon, heading) {
+        if (vehicleMarker) {
+            vehicleMarker.setLngLat([lon, lat]);
+            vehicleMarker.setRotation(heading);
+        }
+    }
+
+    // Called from QML to center map on vehicle
+    function centerOnVehicle(lat, lon, offsetX, bearing) {
+        if (map) {
+            // Offset the center to account for UI overlays
+            const point = map.project([lon, lat]);
+            point.x -= offsetX / 2;
+            const newCenter = map.unproject(point);
+
+            const options = {
+                center: newCenter,
+                duration: 300
+            };
+
+            // If bearing is provided, include it in the same animation
+            if (bearing !== undefined && bearing !== null) {
+                options.bearing = bearing;
+            }
+
+            map.easeTo(options);
+        }
+    }
+
+    // Called from QML to update destination
+    function updateDestination(lat, lon) {
+        if (destinationMarker) {
+            destinationMarker.setLngLat([lon, lat]);
+        }
+    }
+
+    // Called from QML to update route
+    function updateRoute(coordinates) {
+        if (map && map.getSource('route')) {
+            map.getSource('route').setData({
+                'type': 'Feature',
+                'properties': {},
+                'geometry': {
+                    'type': 'LineString',
+                    'coordinates': coordinates
+                }
+            });
+        }
+    }
+
+    // Called from QML to change map style
+    function setMapStyle(styleName) {
+        if (!map) return;
+
+        const styles = {
+            'street': 'mapbox://styles/mapbox/streets-v12',
+            'dark': 'mapbox://styles/mapbox/dark-v11',
+            'satellite': 'mapbox://styles/mapbox/satellite-streets-v12'
+        };
+
+        const styleUrl = styles[styleName] || styles['street'];
+        map.setStyle(styleUrl);
+
+        // Re-add route layer after style change
+        map.once('style.load', () => {
+            map.addSource('route', {
+                'type': 'geojson',
+                'data': {
+                    'type': 'Feature',
+                    'properties': {},
+                    'geometry': {
+                        'type': 'LineString',
+                        'coordinates': []
+                    }
+                }
+            });
+
+            map.addLayer({
+                'id': 'route',
+                'type': 'line',
+                'source': 'route',
+                'layout': {
+                    'line-join': 'round',
+                    'line-cap': 'round'
+                },
+                'paint': {
+                    'line-color': '#4CAF50',
+                    'line-width': 6,
+                    'line-opacity': 0.85
+                }
+            });
+
+            // Restore enabled overlays after style change
+            restoreOverlays();
+        });
+    }
+
+    // Toggle 3D buildings layer
+    function toggle3DBuildings(enabled) {
+        if (!map) return;
+        overlayState.buildings3D = enabled;
+
+        if (enabled) {
+            // Add 3D building extrusions if not already present
+            if (!map.getLayer('3d-buildings')) {
+                map.addLayer({
+                    'id': '3d-buildings',
+                    'source': 'composite',
+                    'source-layer': 'building',
+                    'filter': ['==', 'extrude', 'true'],
+                    'type': 'fill-extrusion',
+                    'minzoom': 15,
+                    'paint': {
+                        'fill-extrusion-color': '#aaa',
+                        'fill-extrusion-height': ['get', 'height'],
+                        'fill-extrusion-base': ['get', 'min_height'],
+                        'fill-extrusion-opacity': 0.6
+                    }
+                });
+            }
+        } else {
+            if (map.getLayer('3d-buildings')) {
+                map.removeLayer('3d-buildings');
+            }
+        }
+    }
+
+    // Toggle traffic layer
+    function toggleTraffic(enabled) {
+        if (!map) return;
+        overlayState.traffic = enabled;
+
+        if (enabled) {
+            // Add traffic source if not present
+            if (!map.getSource('mapbox-traffic')) {
+                map.addSource('mapbox-traffic', {
+                    'type': 'vector',
+                    'url': 'mapbox://mapbox.mapbox-traffic-v1'
+                });
+            }
+            // Add traffic layer if not present
+            if (!map.getLayer('traffic-layer')) {
+                map.addLayer({
+                    'id': 'traffic-layer',
+                    'type': 'line',
+                    'source': 'mapbox-traffic',
+                    'source-layer': 'traffic',
+                    'paint': {
+                        'line-width': 2,
+                        'line-color': [
+                            'match',
+                            ['get', 'congestion'],
+                            'low', '#4CAF50',
+                            'moderate', '#FFEB3B',
+                            'heavy', '#FF9800',
+                            'severe', '#F44336',
+                            '#4CAF50'
+                        ]
+                    }
+                });
+            }
+        } else {
+            if (map.getLayer('traffic-layer')) {
+                map.removeLayer('traffic-layer');
+            }
+            if (map.getSource('mapbox-traffic')) {
+                map.removeSource('mapbox-traffic');
+            }
+        }
+    }
+
+    // Toggle 3D terrain
+    function toggleTerrain(enabled) {
+        if (!map) return;
+        overlayState.terrain = enabled;
+
+        if (enabled) {
+            // Add terrain source if not present
+            if (!map.getSource('mapbox-dem')) {
+                map.addSource('mapbox-dem', {
+                    'type': 'raster-dem',
+                    'url': 'mapbox://mapbox.mapbox-terrain-dem-v1',
+                    'tileSize': 512,
+                    'maxzoom': 14
+                });
+            }
+            // Enable terrain
+            map.setTerrain({ 'source': 'mapbox-dem', 'exaggeration': 1.5 });
+        } else {
+            map.setTerrain(null);
+            if (map.getSource('mapbox-dem')) {
+                map.removeSource('mapbox-dem');
+            }
+        }
+    }
+
+    // Toggle POI labels
+    function togglePOILabels(enabled) {
+        if (!map) return;
+        overlayState.poiLabels = enabled;
+
+        // Find and toggle visibility of POI-related layers
+        const style = map.getStyle();
+        if (!style || !style.layers) return;
+
+        const poiLayerPatterns = ['poi', 'transit', 'airport', 'place-label'];
+
+        style.layers.forEach(layer => {
+            const layerId = layer.id.toLowerCase();
+            const isPOILayer = poiLayerPatterns.some(pattern => layerId.includes(pattern));
+
+            if (isPOILayer && layer.type === 'symbol') {
+                map.setLayoutProperty(layer.id, 'visibility', enabled ? 'visible' : 'none');
+            }
+        });
+    }
+
+    // Restore all enabled overlays after style change
+    function restoreOverlays() {
+        if (overlayState.buildings3D) {
+            toggle3DBuildings(true);
+        }
+        if (overlayState.traffic) {
+            toggleTraffic(true);
+        }
+        if (overlayState.terrain) {
+            toggleTerrain(true);
+        }
+        if (overlayState.poiLabels) {
+            togglePOILabels(true);
+        }
+    }
+
+    // Called from QML to set map bearing
+    function setBearing(bearing) {
+        if (map) {
+            map.easeTo({
+                bearing: bearing,
+                duration: 300
+            });
+        }
+    }
+
+    // Called from QML to set zoom level
+    function setZoom(zoom) {
+        if (map) {
+            map.setZoom(zoom);
+        }
+    }
+
+    // Called from QML to set map pitch/tilt
+    function setPitch(pitch) {
+        if (map) {
+            map.setPitch(pitch);
+        }
+    }
+
+    // Set up Qt WebChannel connection
+    function setupQtChannel(channel) {
+        qtChannel = channel;
+    }
+</script>
+</body>
+</html>
